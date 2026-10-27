@@ -99,3 +99,24 @@ Stage Summary:
 - Companions now run on REAL trained models everywhere: Grok or GLM with a key, Workers AI Llama 3.3 70B free on Cloudflare, GLM in sandbox
 - No fake data anywhere: screen time is honest manual entry from the phone's own Screen Time screen
 - Repo is deploy-ready: push -> Cloudflare Workers Git build -> live (D1 28688ccf bound, AI binding included)
+
+---
+Task ID: 6
+Agent: main (Z.ai)
+Task: Deploy DeepRest to Cloudflare Workers with user's real account (Global API Key auth)
+
+Work Log:
+- User provided Global API Key (cfk_ format, new 2026 scannable format) + email injuguna308@gmail.com; verified via GET /user (X-Auth-Email + X-Auth-Key headers)
+- Account ID detected: 507a35f37ca33ec490fa36f1b9791684
+- CRITICAL: user-supplied D1 UUID 28688ccf-... does NOT exist in the account; real deeprest-db = e4caa5a2-74a7-441d-b6f5-fb95e32ca24e (verified via GET /accounts/:id/d1/database). Fixed wrangler.jsonc, cloudflare/wrangler.toml, wrangler.local.jsonc, cloudflare/README.md
+- No deeprest-76w Pages project exists in account (only homesweb) — explains the 404; Workers deploy supersedes it
+- Built OpenNext bundle clean (build:cf); deployed via deploy:cf with CLOUDFLARE_API_KEY/EMAIL/ACCOUNT_ID env auth
+- LIVE: https://deeprest-app.dev078.workers.dev — bindings: env.DB (deeprest-db D1), env.AI (Workers AI), env.ASSETS, WORKERS_AI_MODEL=llama-3.3-70b
+- Remote D1 schema applied: 8 tables, 37 rows written
+- Secrets set: JWT_SECRET (rand hex32), ENCRYPTION_KEY (rand base64 32)
+- E2E on LIVE site: homepage 200 in 0.76s; register on real D1 OK; /me session + rank OK; screentime set (195min + top apps) OK; REAL Workers AI Llama 3.3 70B Shepherd reply in 7.5s (contextual scripture-grounded, not canned)
+- Pushed to GitHub main (1ef5588) with token-embedded remote URL
+
+Stage Summary:
+- DeepRest is LIVE on Cloudflare Workers with user's real D1 + free real AI (no extra AI key needed)
+- Optional upgrades: custom domain binding, Grok key for grok-4-1-fast, delete unused Pages project
