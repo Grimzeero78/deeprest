@@ -8,7 +8,10 @@
       "android": {
         "buildType": "apk"
       },
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=3072"
+      }
     },
     "production": {
       "android": {
