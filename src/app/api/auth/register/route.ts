@@ -4,6 +4,7 @@ import { createSessionToken, setSessionCookie, hashPassword } from "@/lib/auth";
 import { badRequest, serverError, tooMany } from "@/lib/api-helpers";
 import { LIMITS } from "@/lib/rate-limit";
 import { sanitizeMessage, normalizeName, toUsername } from "@/lib/sanitize";
+import { isBreachedPassword } from "@/lib/pwned-check";
 
 // Registration uses NO email — only a name, a password, a confirmation
 // of that password, and an optional hint to help remember it later.
@@ -38,6 +39,15 @@ export async function POST(req: NextRequest) {
     const existing = await db.user.findUnique({ where: { username } });
     if (existing) {
       return badRequest("This name is already taken. Try signing in instead.");
+    }
+
+    // Breach check (same public lists Chrome uses) — block known-breached
+    // passwords at the door so nobody starts DeepRest with an unsafe one.
+    const breached = await isBreachedPassword(password);
+    if (breached) {
+      return badRequest(
+        "That password has appeared in public data breaches, so it isn't safe to use. Please pick a new, unique password you don't use anywhere else."
+      );
     }
 
     const user = await db.user.create({

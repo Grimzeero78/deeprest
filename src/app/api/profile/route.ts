@@ -5,6 +5,7 @@ import { LIMITS } from "@/lib/rate-limit";
 import { sanitizeMessage, normalizeName } from "@/lib/sanitize";
 import { hashPassword, verifyPassword } from "@/lib/auth";
 import { serializePublicUser } from "@/lib/public-user";
+import { isBreachedPassword } from "@/lib/pwned-check";
 
 const AVATAR_IMAGE_RE = /^data:image\/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=]+$/;
 const MAX_AVATAR_CHARS = 150_000; // ~110 KB binary — clients compress well below this
@@ -85,6 +86,15 @@ export async function POST(req: NextRequest) {
     }
     if (newPassword.length < 8 || newPassword.length > 200) {
       return badRequest("New password must be 8–200 characters.");
+    }
+
+    // Breach check — the new password must not appear in public breach lists
+    // (the same lists Chrome's "password in data breach" warning uses).
+    const breached = await isBreachedPassword(newPassword);
+    if (breached) {
+      return badRequest(
+        "That new password has appeared in public data breaches. Please choose a different, unique password."
+      );
     }
 
     const user = await db.user.findUnique({
