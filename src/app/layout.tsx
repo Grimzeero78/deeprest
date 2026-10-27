@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   description:
     "A calm, gamified rehabilitation platform: hit your 6-hour target, climb 10 ranks, talk to AI companions, chat with the community, and stay accountable with your Dynamic Duo.",
   keywords: ["DeepRest", "screen time", "digital wellness", "recovery", "accountability", "gamification"],
+  verification: {
+    google: "oeDfPU047d5Lk5H24rfTv4vU2PEvHqSo0VTYtD4FUUU",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico?v=2", type: "image/x-icon" },
