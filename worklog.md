@@ -120,3 +120,24 @@ Work Log:
 Stage Summary:
 - DeepRest is LIVE on Cloudflare Workers with user's real D1 + free real AI (no extra AI key needed)
 - Optional upgrades: custom domain binding, Grok key for grok-4-1-fast, delete unused Pages project
+
+---
+Task ID: 7
+Agent: main (Z.ai)
+Task: Android companion app — REAL automatic screen time detection (Expo + native UsageStatsManager)
+
+Work Log:
+- Web API made mobile-capable: requireSession(req) checks Authorization: Bearer JWT first, cookie fallback; login + register return token in JSON; all 12 call sites updated (sos/duo/call GET handlers now take req param); tsc clean
+- mobile/ Expo SDK 54 app: package.json/app.json (com.deeprest.app, PACKAGE_USAGE_STATS), babel, tsconfig, index.js, eas.json (preview=APK), README with both build paths (Android Studio run:android / EAS cloud APK)
+- Native module mobile/modules/deeprest-usage (Expo Modules API, Kotlin): hasPermission (AppOpsManager OPSTR_GET_USAGE_STATS, Q-safe), openPermissionSettings (ACTION_USAGE_ACCESS_SETTINGS), getTodayUsage (queryAndAggregateUsageStats since local midnight, min 60s filter, launcher/system-ui/self excluded, friendly labels, sorted desc)
+- src/api.ts: Bearer fetch client (login/register/getMe/syncScreenTime), token in SecureStore; src/usage.ts: guarded require of native module (degrades in Expo Go), buildSyncPayload caps 1440 min, top 5 apps
+- App.tsx: Splash -> Login/Register -> Home (rank card w/ progress, usage-access amber card, today card with top apps from phone, Sync now, last-7-days strip); AppState re-check after Settings return; hourly BackgroundFetch task (NewData/NoData/Failed)
+- Fixed build conflict: web tsc/eslint now exclude mobile/ (separate toolchain)
+- Local E2E: register->token(251ch), /me Bearer OK, screentime set Bearer OK
+- Redeployed Workers (version 3ff47e66); LIVE E2E: login->token, /me Bearer, phone-style sync 241min TikTok132/YouTube71/Instagram38 stored, rank engine reflects data
+- Pushed ae6058a to GitHub main
+
+Stage Summary:
+- Automatic screen time is now REAL on Android: UsageStatsManager reads actual per-app foreground minutes; no fake data anywhere
+- Honest limits preserved: per-URL history impossible on Android (platform), iOS needs Screen Time API entitlement later
+- User next step: build APK (eas build -p android --profile preview) or expo run:android, grant Usage Access, sync
