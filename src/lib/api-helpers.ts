@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
+import { getSession, verifySessionToken } from "@/lib/auth";
 import type { SessionPayload } from "@/lib/auth";
 
 export function unauthorized() {
@@ -21,8 +21,23 @@ export function serverError(message = "Something went wrong. Please try again.")
   return NextResponse.json({ error: message }, { status: 500 });
 }
 
-/** Resolve the authenticated session or null. */
-export async function requireSession(): Promise<SessionPayload | null> {
+/**
+ * Resolve the authenticated session or null.
+ * Web clients: httpOnly session cookie. Mobile (Expo) clients: the same JWT
+ * sent as `Authorization: Bearer <token>` — cookies are unreliable in React
+ * Native, so the header path is checked first and the cookie is the fallback.
+ */
+export async function requireSession(req?: Request): Promise<SessionPayload | null> {
+  if (req) {
+    const auth = req.headers.get("authorization");
+    if (auth && auth.toLowerCase().startsWith("bearer ")) {
+      const token = auth.slice(7).trim();
+      if (token) {
+        const session = await verifySessionToken(token);
+        if (session) return session;
+      }
+    }
+  }
   return getSession();
 }
 

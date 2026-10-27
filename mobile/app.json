@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "DeepRest",
+    "slug": "deeprest",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "android": {
+      "package": "com.deeprest.app",
+      "label": "DeepRest",
+      "permissions": [
+        "android.permission.PACKAGE_USAGE_STATS",
+        "android.permission.INTERNET"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#1e1b4b"
+      }
+    },
+    "extra": {
+      "apiBase": "https://deeprest-app.dev078.workers.dev"
+    }
+  }
+}

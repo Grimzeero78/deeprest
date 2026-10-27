@@ -1,0 +1,25 @@
+{
+  "name": "deeprest-mobile",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "build:apk": "eas build -p android --profile preview"
+  },
+  "dependencies": {
+    "expo": "~54.0.0",
+    "expo-background-fetch": "~14.0.0",
+    "expo-dev-client": "~6.0.0",
+    "expo-secure-store": "~15.0.0",
+    "expo-status-bar": "~3.0.0",
+    "expo-task-manager": "~14.0.0",
+    "react": "19.1.0",
+    "react-native": "0.81.4"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.10",
+    "typescript": "~5.9.2"
+  }
+}

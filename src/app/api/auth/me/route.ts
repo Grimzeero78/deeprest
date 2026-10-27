@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession, unauthorized, serverError, todayKey } from "@/lib/api-helpers";
 import { getRankForXp, getNextRank, getRankProgress, previewTodayGain } from "@/lib/ranks";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const user = await db.user.findUnique({

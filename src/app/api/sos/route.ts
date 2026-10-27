@@ -13,9 +13,9 @@ async function getPartnerId(userId: string): Promise<string | null> {
 }
 
 /** GET /api/sos — alerts I sent + alerts my partner sent (both views) */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const partnerId = await getPartnerId(session.userId);
@@ -48,7 +48,7 @@ export async function GET() {
 /** POST /api/sos { confirmed: true, message } — fires the panic alert */
 export async function POST(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     // Anti-spam: 3 alerts per 5 minutes (Cloudflare WAF rule in production)
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
 /** PATCH /api/sos { id, action: "acknowledge" } — partner taps "I'm here" */
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const body = await req.json().catch(() => null);

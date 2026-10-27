@@ -43,6 +43,8 @@
     "tests",
     "mini-services",
     ".open-next",
-    ".wrangler"
+    ".wrangler",
+    "mobile",
+    "src/generated"
   ]
 }

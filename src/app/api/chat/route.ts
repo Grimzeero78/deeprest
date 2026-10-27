@@ -12,7 +12,7 @@ const MAX_HISTORY = 16; // messages of context sent to the model
 /** GET /api/chat?persona=SHEPHERD -> decrypted history */
 export async function GET(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const personaParam = req.nextUrl.searchParams.get("persona");
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 /** POST /api/chat { persona, message } -> AI reply (persisted encrypted at rest) */
 export async function POST(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const rl = LIMITS.chat(session.userId);

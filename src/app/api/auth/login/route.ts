@@ -41,8 +41,10 @@ export async function POST(req: NextRequest) {
     });
     await setSessionCookie(token);
 
+    // `token` lets native mobile clients (no cookie jar) use Bearer auth.
     return NextResponse.json({
       user: { id: user.id, name: user.name, username: user.username, avatarColor: user.avatarColor },
+      token,
     });
   } catch (err) {
     console.error("[login]", err);

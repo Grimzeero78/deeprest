@@ -18,9 +18,9 @@ async function getActivePartnership(userId: string) {
 }
 
 /** GET /api/duo — partnership state + partner's shared dashboard data */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const partnership = await getActivePartnership(session.userId);
@@ -86,7 +86,7 @@ export async function GET() {
 /** POST /api/duo { action: invite | accept | unbind } */
 export async function POST(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const body = await req.json().catch(() => null);

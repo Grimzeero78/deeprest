@@ -38,7 +38,7 @@ function parseTopApps(json: string | null | undefined): TopAppEntry[] {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const body = await req.json().catch(() => null);

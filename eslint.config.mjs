@@ -51,6 +51,7 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     ".open-next/**",         // OpenNext Cloudflare build output
     ".wrangler/**",          // wrangler local dev/preview output
     "db/**",
+    "mobile/**",             // Expo mobile app — separate toolchain
   ]
 }];
 

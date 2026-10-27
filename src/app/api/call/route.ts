@@ -16,9 +16,9 @@ async function getPartnerId(userId: string): Promise<string | null> {
  * Returns the most recent non-ended call where I'm caller or callee,
  * plus peer identity for the call UI.
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const call = await db.callSession.findFirst({
@@ -54,7 +54,7 @@ export async function GET() {
 /** POST /api/call { modality: "voice" | "video" } — ring the Dynamic Duo partner */
 export async function POST(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const rl = LIMITS.call(session.userId);
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
 /** PATCH /api/call { callId, action: answer | decline | end } */
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await requireSession();
+    const session = await requireSession(req);
     if (!session) return unauthorized();
 
     const body = await req.json().catch(() => null);

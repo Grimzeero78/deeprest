@@ -61,3 +61,11 @@ db/
 wrangler.local.jsonc
 src/generated/prisma/libquery_engine-*.node
 download/
+
+# ---- DeepRest mobile (Expo) ----
+mobile/node_modules/
+mobile/.expo/
+mobile/android/
+mobile/ios/
+mobile/*.orig
+mobile/.eas/
