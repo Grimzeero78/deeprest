@@ -4,6 +4,7 @@ import { requireSession, unauthorized, badRequest, serverError, tooMany } from "
 import { LIMITS } from "@/lib/rate-limit";
 import { sanitizeMessage, normalizeName } from "@/lib/sanitize";
 import { serializePublicUser } from "@/lib/public-user";
+import { ensureDm } from "@/lib/social";
 
 const PEER_SELECT = {
   id: true,
@@ -73,12 +74,14 @@ export async function GET(req: NextRequest) {
         };
 
         if (convo.kind === "dm") {
-          const peer = others[0]?.user;
+          const peerMember = others[0];
+          const peer = peerMember?.user;
           if (!peer) return null; // dangling DM — partner deleted
           return {
             ...base,
             name: peer.name,
             emoji: null,
+            peerLastReadAt: peerMember.lastReadAt,
             peer: {
               id: peer.id,
               name: peer.name,
@@ -137,26 +140,10 @@ export async function POST(req: NextRequest) {
       const other = await db.user.findUnique({ where: { id: userId }, select: { id: true } });
       if (!other) return badRequest("That person could not be found.");
 
-      // find an existing DM that already contains both of us
-      const myDms = await db.conversationMember.findMany({
-        where: { userId: session.userId, conversation: { kind: "dm" } },
-        select: { conversationId: true },
-      });
-      const existing = await db.conversationMember.findFirst({
-        where: { userId, conversationId: { in: myDms.map((m) => m.conversationId) } },
-      });
-      if (existing) {
-        return NextResponse.json({ conversationId: existing.conversationId, existed: true });
-      }
-
-      const convo = await db.conversation.create({ data: { kind: "dm" } });
-      await db.conversationMember.createMany({
-        data: [
-          { conversationId: convo.id, userId: session.userId },
-          { conversationId: convo.id, userId },
-        ],
-      });
-      return NextResponse.json({ conversationId: convo.id, existed: false }, { status: 201 });
+      // Race-proof get-or-create: the pair's DM id is deterministic, so a
+      // double-tap can never spawn two parallel threads (see lib/social.ts).
+      const conversationId = await ensureDm(session.userId, userId);
+      return NextResponse.json({ conversationId, existed: true });
     }
 
     // ---------- group ----------

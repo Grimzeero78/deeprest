@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { requireSession, unauthorized, badRequest, serverError, tooMany } from "@/lib/api-helpers";
 import { sanitizeMessage } from "@/lib/sanitize";
 import { LIMITS } from "@/lib/rate-limit";
+import { ensureDm } from "@/lib/social";
 
 async function getPartnerId(userId: string): Promise<string | null> {
   const p = await db.duoPartnership.findFirst({
@@ -107,7 +108,31 @@ export async function PATCH(req: NextRequest) {
     }
 
     await db.sOSAlert.update({ where: { id }, data: { status: "ACKNOWLEDGED" } });
-    return NextResponse.json({ ok: true });
+
+    // Deliver the response as a REAL message in the pair's DM chat — an
+    // acknowledgement only flipping a status badge was easy to miss. The
+    // person in distress now literally receives "I'm here" in the chat.
+    let conversationId: string | null = null;
+    try {
+      conversationId = await ensureDm(alert.senderId, session.userId);
+      await db.directMessage.create({
+        data: {
+          conversationId,
+          senderId: session.userId,
+          kind: "text",
+          body: "I'm here for you. You're not alone. 🫂",
+        },
+      });
+      await db.conversation.update({
+        where: { id: conversationId },
+        data: { updatedAt: new Date() },
+      });
+    } catch (dmErr) {
+      console.error("[sos:PATCH] dm delivery", dmErr);
+      conversationId = null;
+    }
+
+    return NextResponse.json({ ok: true, conversationId });
   } catch (err) {
     console.error("[sos:PATCH]", err);
     return serverError();

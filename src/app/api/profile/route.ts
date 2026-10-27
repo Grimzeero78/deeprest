@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession, unauthorized, badRequest, serverError, tooMany } from "@/lib/api-helpers";
 import { LIMITS } from "@/lib/rate-limit";
-import { sanitizeMessage, normalizeName } from "@/lib/sanitize";
+import { sanitizeMessage, normalizeName, toUsername } from "@/lib/sanitize";
 import { hashPassword, verifyPassword } from "@/lib/auth";
 import { serializePublicUser } from "@/lib/public-user";
 import { isBreachedPassword } from "@/lib/pwned-check";
@@ -26,7 +26,17 @@ export async function PATCH(req: NextRequest) {
     if (body?.name !== undefined) {
       const name = normalizeName(sanitizeMessage(body.name, 40), 40);
       if (name.length < 2) return badRequest("Name must be at least 2 characters.");
+      // Login identity IS the name (toUsername) — a rename must move both,
+      // otherwise the user silently changes how they sign in and locks
+      // themselves out of their old login.
+      const username = toUsername(name);
+      const clash = await db.user.findFirst({
+        where: { username, id: { not: session.userId } },
+        select: { id: true },
+      });
+      if (clash) return badRequest("That name is taken — try adding a middle name or emoji.");
       data.name = name;
+      data.username = username;
     }
 
     if (body?.bio !== undefined) {

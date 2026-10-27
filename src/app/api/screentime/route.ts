@@ -78,8 +78,15 @@ export async function POST(req: NextRequest) {
     }
 
     if (action === "set") {
-      // Honest logging: the user types the total their phone's
-      // Digital Wellbeing / Screen Time screen actually shows.
+      // DEVICE-ONLY: screen time can never be typed in by hand. The Android
+      // app reads UsageStatsManager and syncs with its Bearer token — the web
+      // session (cookie) has no way to claim usage numbers. What the phone
+      // measured is the only truth the dashboard shows.
+      if (!req.headers.get("authorization")?.startsWith("Bearer ")) {
+        return badRequest(
+          "Screen time can only be synced from the DeepRest Android app with Usage access granted."
+        );
+      }
       const minutes = Math.round(Number(body?.minutes));
       if (!Number.isFinite(minutes) || minutes < 0 || minutes > 24 * 60) {
         return badRequest("Minutes must be between 0 and 1440.");
@@ -98,28 +105,6 @@ export async function POST(req: NextRequest) {
         minutesUsed: updated.minutesUsed,
         topApps: parseTopApps(updated.topApps),
       });
-    }
-
-    if (action === "log") {
-      // Quick +/- adjustments (e.g. +30m, or -20m spent offline).
-      const delta = Number(body?.minutes);
-      if (!Number.isFinite(delta) || delta === 0) return badRequest("Invalid minutes value.");
-      const minutesUsed = Math.max(0, Math.min(24 * 60, log.minutesUsed + Math.round(delta)));
-      const updated = await db.screenTimeLog.update({
-        where: { id: log.id },
-        data: { minutesUsed },
-      });
-      return NextResponse.json({
-        ok: true,
-        minutesUsed: updated.minutesUsed,
-        topApps: parseTopApps(updated.topApps),
-      });
-    }
-
-    if (action === "note") {
-      // free-text note is sanitized & length-capped (XSS defense-in-depth)
-      const note = sanitizeMessage(body?.note, 280);
-      return NextResponse.json({ ok: true, note });
     }
 
     return badRequest("Unknown action.");

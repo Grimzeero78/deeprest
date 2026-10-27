@@ -8,11 +8,9 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-  Flame, Sparkles, Timer, Trophy, ArrowUpRight, Loader2, MonitorSmartphone, Users, ChevronRight,
+  Flame, Sparkles, Trophy, ArrowUpRight, Loader2, MonitorSmartphone, Users, ChevronRight,
+  Smartphone, ShieldCheck,
 } from "lucide-react";
 import { RankIcon } from "./RankIcons";
 import { ProgressRing, formatHm } from "./ProgressRing";
@@ -29,62 +27,11 @@ interface DashboardProps {
 export function Dashboard({ me, duo, onRefresh, onGoDuo }: DashboardProps) {
   const [busy, setBusy] = useState<string | null>(null);
   const [targetDraft, setTargetDraft] = useState<number>(me.settings.dailyTargetMin);
-  const [logOpen, setLogOpen] = useState(false);
-  const [hDraft, setHDraft] = useState("0");
-  const [mDraft, setMDraft] = useState("0");
-  const [appsDraft, setAppsDraft] = useState([
-    { name: "", minutes: "" },
-    { name: "", minutes: "" },
-    { name: "", minutes: "" },
-  ]);
   const { toast } = useToast();
 
   const { today, rank, user } = me;
   const pct = Math.round((today.minutesUsed / Math.max(today.targetMin, 1)) * 100);
-
-  async function screenAction(
-    action: "log" | "set",
-    payload?: { minutes?: number; topApps?: { name: string; minutes: number }[] }
-  ): Promise<boolean> {
-    setBusy(action);
-    try {
-      const res = await fetch("/api/screentime", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, ...payload }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        toast({ title: "Could not save", description: data.error, variant: "destructive" });
-        return false;
-      }
-      toast({
-        title: "Screen time saved",
-        description: `Today: ${formatHm(data.minutesUsed)} of ${formatHm(me.settings.dailyTargetMin)} target.`,
-      });
-      onRefresh();
-      return true;
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  function openLogDialog() {
-    setHDraft(String(Math.floor(today.minutesUsed / 60)));
-    setMDraft(String(today.minutesUsed % 60));
-    setLogOpen(true);
-  }
-
-  async function saveLog() {
-    const h = Math.max(0, parseInt(hDraft || "0", 10) || 0);
-    const m = Math.max(0, parseInt(mDraft || "0", 10) || 0);
-    const total = Math.min(h * 60 + m, 24 * 60);
-    const topApps = appsDraft
-      .map((a) => ({ name: a.name.trim(), minutes: parseInt(a.minutes || "0", 10) || 0 }))
-      .filter((a) => a.name && a.minutes > 0);
-    const ok = await screenAction("set", { minutes: total, topApps });
-    if (ok) setLogOpen(false);
-  }
+  const phoneSynced = today.minutesUsed > 0 || today.topApps.length > 0;
 
   async function saveTarget() {
     setBusy("target");
@@ -145,24 +92,31 @@ export function Dashboard({ me, duo, onRefresh, onGoDuo }: DashboardProps) {
                 <span className="font-semibold text-emerald-300">+{rank.potentialTodayXp} XP</span>
               </div>
 
-              {/* Real logging — the total comes from your phone's own Screen Time screen */}
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  variant="outline" size="sm" disabled={busy !== null}
-                  onClick={openLogDialog}
-                  className="border-white/15 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white"
-                >
-                  <Timer className="mr-2 h-3.5 w-3.5" />
-                  Log screen time
-                </Button>
-                <Button
-                  variant="outline" size="sm" disabled={busy !== null}
-                  onClick={() => screenAction("log", { minutes: -20 })}
-                  className="border-white/15 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white"
-                >
-                  {busy === "log" ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : null}
-                  -20m offline
-                </Button>
+              {/* Device sync — the ONLY source of usage truth is the phone */}
+              <div
+                className={
+                  phoneSynced
+                    ? "flex items-center justify-between rounded-xl border border-emerald-400/15 bg-emerald-500/5 px-3 py-2.5 text-sm"
+                    : "rounded-xl border border-dashed border-amber-400/25 bg-amber-500/5 px-3 py-3 text-sm"
+                }
+              >
+                {phoneSynced ? (
+                  <>
+                    <span className="flex items-center gap-2 text-emerald-200">
+                      <ShieldCheck className="h-4 w-4" /> Synced from your phone
+                    </span>
+                    <span className="text-xs text-slate-400">auto via the Android app</span>
+                  </>
+                ) : (
+                  <div className="flex items-start gap-2.5">
+                    <Smartphone className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+                    <p className="text-xs leading-relaxed text-amber-100/80">
+                      Waiting for your phone. Install the DeepRest Android app, grant{' '}
+                      <span className="font-semibold text-amber-200">Usage access</span>, and your real
+                      screen time appears here automatically — no typing, no guessing.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>
@@ -218,7 +172,7 @@ export function Dashboard({ me, duo, onRefresh, onGoDuo }: DashboardProps) {
           <CardContent className="space-y-3">
             {today.topApps.length === 0 && (
               <p className="py-6 text-center text-sm text-slate-500">
-                Nothing logged yet. Tap <span className="text-slate-300">Log screen time</span> and enter today&apos;s total from your phone.
+                Your real app usage shows up here once your phone syncs — measured, never typed in.
               </p>
             )}
             {today.topApps.slice(0, 5).map((app, i) => {
@@ -334,79 +288,10 @@ export function Dashboard({ me, duo, onRefresh, onGoDuo }: DashboardProps) {
                 </div>
               );
             })}
-            {last7.length === 0 && <p className="w-full py-4 text-center text-sm text-slate-500">Your week will fill up as you log each day.</p>}
+            {last7.length === 0 && <p className="w-full py-4 text-center text-sm text-slate-500">Your week fills up automatically as your phone syncs each day.</p>}
           </div>
         </CardContent>
       </Card>
-      {/* Log screen time dialog */}
-      <Dialog open={logOpen} onOpenChange={setLogOpen}>
-        <DialogContent className="border-white/10 bg-[#0d1228] text-slate-100 sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white">
-              <Timer className="h-4 w-4 text-cyan-300" /> Log today&apos;s screen time
-            </DialogTitle>
-            <DialogDescription className="text-slate-400">
-              Open <span className="text-slate-200">Digital Wellbeing</span> (Android) or{" "}
-              <span className="text-slate-200">Screen Time</span> (iPhone) and enter the total it shows.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="log-hours" className="text-xs text-slate-400">Hours</Label>
-                <Input
-                  id="log-hours" type="number" min={0} max={24} value={hDraft}
-                  onChange={(e) => setHDraft(e.target.value)}
-                  className="border-white/10 bg-white/5 text-white"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="log-minutes" className="text-xs text-slate-400">Minutes</Label>
-                <Input
-                  id="log-minutes" type="number" min={0} max={59} value={mDraft}
-                  onChange={(e) => setMDraft(e.target.value)}
-                  className="border-white/10 bg-white/5 text-white"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs text-slate-400">Top apps today (optional)</Label>
-              {appsDraft.map((app, i) => (
-                <div key={i} className="flex gap-2">
-                  <Input
-                    placeholder={`App ${i + 1}, e.g. TikTok`} value={app.name}
-                    onChange={(e) => setAppsDraft((rows) => rows.map((r, j) => (j === i ? { ...r, name: e.target.value } : r)))}
-                    className="h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-600"
-                  />
-                  <Input
-                    placeholder="min" type="number" min={0} value={app.minutes}
-                    onChange={(e) => setAppsDraft((rows) => rows.map((r, j) => (j === i ? { ...r, minutes: e.target.value } : r)))}
-                    className="h-9 w-24 border-white/10 bg-white/5 text-sm text-white"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <DialogFooter className="gap-2">
-            <Button
-              variant="ghost" onClick={() => setLogOpen(false)}
-              className="text-slate-300 hover:bg-white/10 hover:text-white"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={saveLog} disabled={busy !== null}
-              className="bg-gradient-to-r from-cyan-500 to-violet-500 text-white hover:from-cyan-400 hover:to-violet-400"
-            >
-              {busy === "set" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Save today
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

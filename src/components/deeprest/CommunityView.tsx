@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   Search, Send, Loader2, UsersRound, MessageSquarePlus, ArrowLeft, LogOut,
-  Crown, MessageCircle,
+  Crown, MessageCircle, Check, CheckCheck, Smile,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar } from "./Avatar";
@@ -134,21 +134,29 @@ export function CommunityView({ me, onUnreadTotal }: Props) {
   }, [dirQuery, dirOpen, groupOpen, me.user.id]);
 
   // ---------- actions ----------
+  const dmOpeningRef = useRef<string | null>(null);
   async function openDm(userId: string) {
-    const res = await fetch("/api/social/conversations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ kind: "dm", userId }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      toast({ title: "Could not open chat", description: data.error, variant: "destructive" });
-      return;
+    // double-tap guard: one in-flight request per user at a time
+    if (dmOpeningRef.current === userId) return;
+    dmOpeningRef.current = userId;
+    try {
+      const res = await fetch("/api/social/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: "dm", userId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast({ title: "Could not open chat", description: data.error, variant: "destructive" });
+        return;
+      }
+      setDirOpen(false);
+      setProfileUser(null);
+      setActiveId(data.conversationId);
+      loadConvos();
+    } finally {
+      dmOpeningRef.current = null;
     }
-    setDirOpen(false);
-    setProfileUser(null);
-    setActiveId(data.conversationId);
-    loadConvos();
   }
 
   async function createGroup() {
@@ -235,6 +243,10 @@ export function CommunityView({ me, onUnreadTotal }: Props) {
   }
 
   const filtered = convos.filter((c) => c.name.toLowerCase().includes(filter.toLowerCase()));
+
+  // WhatsApp-style read receipts: my bubble shows blue double-ticks once the
+  // peer has read the thread (their membership lastReadAt covers the message).
+  const dmPeerReadIso = activeConvo?.kind === "dm" ? activeConvo.peerLastReadAt || null : null;
 
   // ---------- render ----------
   return (
@@ -352,13 +364,14 @@ export function CommunityView({ me, onUnreadTotal }: Props) {
               )}
             </div>
 
-            {/* messages */}
-            <div ref={scrollRef} className="deeprest-scroll min-h-0 flex-1 space-y-2.5 overflow-y-auto px-3 py-4 sm:px-4">
+            {/* messages — WhatsApp dark canvas */}
+            <div ref={scrollRef} className="deeprest-scroll min-h-0 flex-1 space-y-2 overflow-y-auto bg-[#0b141a] px-3 py-4 sm:px-6">
               {!msgsLoaded && (
                 <div className="flex h-full items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-slate-500" /></div>
               )}
               {msgsLoaded && messages.length === 0 && (
                 <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#202c33] text-xl">🔐</span>
                   <p className="text-sm font-medium text-slate-300">No messages yet</p>
                   <p className="text-xs text-slate-500">Send the first message — keep each other accountable.</p>
                 </div>
@@ -370,31 +383,47 @@ export function CommunityView({ me, onUnreadTotal }: Props) {
                   return (
                     <div key={m.id}>
                       {showDay && <DaySeparator iso={m.createdAt} />}
-                      <p className="my-1 text-center text-[11px] italic text-slate-500">{m.body}</p>
+                      <div className="flex justify-center py-0.5">
+                        <span className="rounded-lg bg-[#182229] px-3 py-1 text-center text-[11px] italic text-[#8696a0]">
+                          {m.body}
+                        </span>
+                      </div>
                     </div>
                   );
                 }
+                const peerRead = Boolean(
+                  m.mine && dmPeerReadIso && new Date(m.createdAt).getTime() <= new Date(dmPeerReadIso).getTime()
+                );
                 return (
-                  <div key={m.id} className={cn("flex", m.mine ? "justify-end" : "justify-start")}>
-                    <div className={cn("max-w-[85%] sm:max-w-[70%]", !m.mine && "flex items-end gap-2")}>
-                      {!m.mine && (
-                        <button onClick={() => openSenderProfile(m)} aria-label={`View ${m.senderName}`}>
-                          <Avatar name={m.senderName} color={m.senderColor} image={m.senderImage} emoji={m.senderEmoji} size={26} />
-                        </button>
-                      )}
-                      <div className={cn(
-                        "rounded-2xl px-3.5 py-2 text-sm leading-relaxed shadow-md",
-                        m.mine
-                          ? "rounded-br-md bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-violet-950/30"
-                          : "rounded-bl-md border border-white/10 bg-white/[0.06] text-slate-100"
-                      )}>
+                  <div key={m.id}>
+                    {showDay && <DaySeparator iso={m.createdAt} />}
+                    <div className={cn("flex", m.mine ? "justify-end" : "justify-start")}>
+                      <div className={cn("flex max-w-[85%] items-end gap-1.5 sm:max-w-[70%]", !m.mine && "flex-row")}>
                         {!m.mine && activeConvo.kind === "group" && (
-                          <button onClick={() => openSenderProfile(m)} className="mb-0.5 block text-xs font-semibold text-violet-300 hover:underline">
-                            {m.senderName}
+                          <button onClick={() => openSenderProfile(m)} aria-label={`View ${m.senderName}`}>
+                            <Avatar name={m.senderName} color={m.senderColor} image={m.senderImage} emoji={m.senderEmoji} size={26} />
                           </button>
                         )}
-                        <p className="whitespace-pre-wrap break-words">{m.body}</p>
-                        <p className={cn("mt-1 text-right text-[10px]", m.mine ? "text-white/70" : "text-slate-500")}>{fmtTime(m.createdAt)}</p>
+                        <div className={cn(
+                          "px-2.5 py-1.5 text-[14.5px] leading-snug shadow-[0_1px_1px_rgba(0,0,0,0.35)]",
+                          "rounded-lg",
+                          m.mine
+                            ? "rounded-br-sm bg-[#005c4b] text-[#e9edef]"
+                            : "rounded-bl-sm bg-[#202c33] text-[#e9edef]"
+                        )}>
+                          {!m.mine && activeConvo.kind === "group" && (
+                            <button onClick={() => openSenderProfile(m)} className="mb-0.5 block text-[13px] font-semibold" style={{ color: m.senderColor || "#06cf9c" }}>
+                              {m.senderName}
+                            </button>
+                          )}
+                          <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                          <span className="float-right ml-2.5 mt-1 flex translate-y-0.5 items-center gap-1 text-[10px] text-[#ffffff99]">
+                            {fmtTime(m.createdAt)}
+                            {m.mine && (
+                              peerRead ? <CheckCheck className="h-3.5 w-3.5 text-[#53bdeb]" /> : <Check className="h-3.5 w-3.5 text-[#8696a0]" />
+                            )}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -402,23 +431,24 @@ export function CommunityView({ me, onUnreadTotal }: Props) {
               })}
             </div>
 
-            {/* composer */}
-            <div className="border-t border-white/10 p-3">
-              <div className="flex items-end gap-2">
+            {/* composer — WhatsApp bar */}
+            <div className="flex items-end gap-2 bg-[#0b141a] px-3 py-2.5 sm:px-6">
+              <div className="flex min-h-11 flex-1 items-end gap-2 rounded-3xl bg-[#202c33] px-3 py-1.5">
+                <Smile className="mb-1 h-5 w-5 shrink-0 text-[#8696a0]" aria-hidden />
                 <Textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                   placeholder={`Message ${activeConvo.kind === "group" ? activeConvo.name : activeConvo.name.split(" ")[0]}…`}
                   rows={1}
-                  className="max-h-32 min-h-11 flex-1 resize-none border-white/10 bg-white/5 py-3 text-slate-100 placeholder:text-slate-500 focus-visible:ring-violet-400"
+                  className="max-h-32 flex-1 resize-none border-0 bg-transparent px-0 py-1.5 text-[15px] text-[#e9edef] placeholder:text-[#8696a0] focus-visible:ring-0 focus-visible:ring-offset-0"
                   maxLength={2000}
                 />
-                <Button onClick={sendMessage} disabled={sending || !input.trim()} size="icon" aria-label="Send"
-                  className="h-11 w-11 shrink-0 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white hover:from-violet-400 hover:to-fuchsia-400">
-                  {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                </Button>
               </div>
+              <button onClick={sendMessage} disabled={sending || !input.trim()} aria-label="Send"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#00a884] text-white transition hover:bg-[#06cf9c] disabled:opacity-50">
+                {sending ? <Loader2 className="h-4.5 w-4.5 animate-spin" /> : <Send className="h-4.5 w-4.5 -translate-x-px" />}
+              </button>
             </div>
           </>
         )}
@@ -596,10 +626,10 @@ function DaySeparator({ iso }: { iso: string }) {
       ? "Yesterday"
       : d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
   return (
-    <div className="my-2 flex items-center gap-3">
-      <span className="h-px flex-1 bg-white/10" />
-      <span className="text-[10px] uppercase tracking-wide text-slate-500">{label}</span>
-      <span className="h-px flex-1 bg-white/10" />
+    <div className="flex justify-center py-1">
+      <span className="rounded-lg bg-[#182229] px-3 py-1 text-[11px] font-medium uppercase tracking-wide text-[#8696a0] shadow">
+        {label}
+      </span>
     </div>
   );
 }

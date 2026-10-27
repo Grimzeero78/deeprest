@@ -117,6 +117,8 @@ export interface ConversationListItem {
   memberCount: number;
   lastMessage: { body: string; kind: string; createdAt: string; senderId: string; senderName: string } | null;
   peer?: { id: string; name: string; avatarColor: string; avatarImage: string | null; avatarEmoji: string | null; bio: string | null; rank: RankBlock };
+  /** DM only — when the peer last read the thread (drives WhatsApp-style blue ticks) */
+  peerLastReadAt?: string | null;
   members?: PublicUser[];
 }
 

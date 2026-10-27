@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { requireSession, unauthorized, badRequest, serverError, todayKey } from "@/lib/api-helpers";
 import { sanitizeMessage } from "@/lib/sanitize";
 import { randomBytes } from "crypto";
+import { ensureDm } from "@/lib/social";
 
 async function getActivePartnership(userId: string) {
   return db.duoPartnership.findFirst({
@@ -121,6 +122,24 @@ export async function POST(req: NextRequest) {
         where: { id: invite.id },
         data: { partnerId: session.userId, status: "ACTIVE" },
       });
+
+      // Give the new duo their private chat immediately — the SOS "I'm here"
+      // flow and daily check-ins both live in this thread.
+      try {
+        const conversationId = await ensureDm(invite.initiatorId, session.userId);
+        await db.directMessage.create({
+          data: {
+            conversationId,
+            senderId: session.userId,
+            kind: "system",
+            body: "You two are now each other's Dynamic Duo — this is your private chat.",
+          },
+        });
+        await db.conversation.update({ where: { id: conversationId }, data: { updatedAt: new Date() } });
+      } catch (dmErr) {
+        console.error("[duo:POST:accept] dm bootstrap", dmErr);
+      }
+
       return NextResponse.json({ ok: true });
     }
 

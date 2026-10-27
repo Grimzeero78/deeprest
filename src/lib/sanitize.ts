@@ -30,9 +30,17 @@ export function sanitizeMessage(raw: unknown, maxLen = 2000): string {
     .trim();
 }
 
-/** Normalize a display name: collapse whitespace, strip stray chars, cap length. */
+/** Normalize a display name: collapse whitespace, strip stray chars, cap length.
+ *  Removes HTML/script-significant characters (defense-in-depth — React escapes
+ *  on render, but names also feed usernames, DM system messages and previews).
+ *  Letters, numbers, spaces, emoji and friendly punctuation all survive. */
 export function normalizeName(raw: string, maxLen = 40): string {
-  return raw.replace(/\s+/g, " ").trim().slice(0, maxLen);
+  return raw
+    .replace(/[<>"'`&\\{}[\]$;|(=~^*!?%#@+]/g, "") // HTML/script/meta chars
+    .replace(/[\u0000-\u001F\u007F]/g, "") // control chars
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maxLen);
 }
 
 /** Login identifier — lowercase form of the name, unique per account. */
