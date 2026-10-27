@@ -74,6 +74,11 @@ export type DuoPartnership = Prisma.DuoPartnershipModel
  */
 export type SOSAlert = Prisma.SOSAlertModel
 /**
+ * Model LoginThrottle
+ * 
+ */
+export type LoginThrottle = Prisma.LoginThrottleModel
+/**
  * Model CallSession
  * 
  */

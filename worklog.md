@@ -230,3 +230,4 @@ Work Log:
 
 Stage Summary:
 - Fix is a verified single-line import correction matching SDK 54 canonical usage; new build c4057780 queued with watcher armed
+EAS build watcher: status=IN_QUEUE (check @ 2026-10-27T18:20Z)

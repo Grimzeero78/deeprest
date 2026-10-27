@@ -4,13 +4,14 @@ import { createSessionToken, setSessionCookie, verifyPassword } from "@/lib/auth
 import { badRequest, serverError, tooMany } from "@/lib/api-helpers";
 import { LIMITS } from "@/lib/rate-limit";
 import { toUsername } from "@/lib/sanitize";
+import { authThrottleStatus, authThrottleKeys, recordAuthFail, clearAuthFails } from "@/lib/login-throttle";
 
 // Sign-in uses NO email — only the name chosen at registration plus the
 // password. If the attempt fails, the stored password hint (if any) is
 // returned to help the user remember it.
 export async function POST(req: NextRequest) {
   try {
-    const ip = req.headers.get("x-forwarded-for") || "local";
+    const ip = (req.headers.get("x-forwarded-for") || "local").split(",")[0].trim();
     const rl = LIMITS.auth(ip);
     if (!rl.ok) return tooMany(rl.retryAfterSec);
 
@@ -21,10 +22,25 @@ export async function POST(req: NextRequest) {
     if (!name || !password) return badRequest("Name and password are required.");
 
     const username = toUsername(name);
+    const throttleKeys = authThrottleKeys(username, ip);
+
+    // D1-backed lockout BEFORE touching the password hash — survives Workers
+    // isolate round-robin (in-memory maps do not).
+    for (const key of throttleKeys) {
+      const t = await authThrottleStatus(key);
+      if (t.throttled) {
+        return NextResponse.json(
+          { error: "Too many failed attempts. Take a breath and try again soon." },
+          { status: 429, headers: { "Retry-After": String(t.retryAfterSec) } }
+        );
+      }
+    }
+
     const user = await db.user.findUnique({ where: { username } });
     if (!user || !(await verifyPassword(password, user.passwordHash))) {
       // Attach the hint only when the account exists — never leak whether
       // the name itself is registered to unauthenticated probing beyond this.
+      await Promise.all(throttleKeys.map((k) => recordAuthFail(k)));
       return NextResponse.json(
         {
           error: "Incorrect name or password.",
@@ -33,6 +49,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    await clearAuthFails(throttleKeys);
 
     const token = await createSessionToken({
       userId: user.id,

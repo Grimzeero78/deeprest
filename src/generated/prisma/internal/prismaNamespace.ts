@@ -397,6 +397,7 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   DuoPartnership: 'DuoPartnership',
   SOSAlert: 'SOSAlert',
+  LoginThrottle: 'LoginThrottle',
   CallSession: 'CallSession',
   Conversation: 'Conversation',
   ConversationMember: 'ConversationMember',
@@ -416,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userSettings" | "screenTimeLog" | "chatSession" | "chatMessage" | "duoPartnership" | "sOSAlert" | "callSession" | "conversation" | "conversationMember" | "directMessage"
+    modelProps: "user" | "userSettings" | "screenTimeLog" | "chatSession" | "chatMessage" | "duoPartnership" | "sOSAlert" | "loginThrottle" | "callSession" | "conversation" | "conversationMember" | "directMessage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -938,6 +939,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    LoginThrottle: {
+      payload: Prisma.$LoginThrottlePayload<ExtArgs>
+      fields: Prisma.LoginThrottleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LoginThrottleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LoginThrottleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload>
+        }
+        findFirst: {
+          args: Prisma.LoginThrottleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LoginThrottleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload>
+        }
+        findMany: {
+          args: Prisma.LoginThrottleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload>[]
+        }
+        create: {
+          args: Prisma.LoginThrottleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload>
+        }
+        createMany: {
+          args: Prisma.LoginThrottleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LoginThrottleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload>[]
+        }
+        delete: {
+          args: Prisma.LoginThrottleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload>
+        }
+        update: {
+          args: Prisma.LoginThrottleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload>
+        }
+        deleteMany: {
+          args: Prisma.LoginThrottleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LoginThrottleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LoginThrottleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload>[]
+        }
+        upsert: {
+          args: Prisma.LoginThrottleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoginThrottlePayload>
+        }
+        aggregate: {
+          args: Prisma.LoginThrottleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLoginThrottle>
+        }
+        groupBy: {
+          args: Prisma.LoginThrottleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LoginThrottleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LoginThrottleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LoginThrottleCountAggregateOutputType> | number
+        }
+      }
+    }
     CallSession: {
       payload: Prisma.$CallSessionPayload<ExtArgs>
       fields: Prisma.CallSessionFieldRefs
@@ -1363,6 +1438,15 @@ export const SOSAlertScalarFieldEnum = {
 export type SOSAlertScalarFieldEnum = (typeof SOSAlertScalarFieldEnum)[keyof typeof SOSAlertScalarFieldEnum]
 
 
+export const LoginThrottleScalarFieldEnum = {
+  key: 'key',
+  fails: 'fails',
+  windowStart: 'windowStart'
+} as const
+
+export type LoginThrottleScalarFieldEnum = (typeof LoginThrottleScalarFieldEnum)[keyof typeof LoginThrottleScalarFieldEnum]
+
+
 export const CallSessionScalarFieldEnum = {
   id: 'id',
   callerId: 'callerId',
@@ -1563,6 +1647,7 @@ export type GlobalOmitConfig = {
   chatMessage?: Prisma.ChatMessageOmit
   duoPartnership?: Prisma.DuoPartnershipOmit
   sOSAlert?: Prisma.SOSAlertOmit
+  loginThrottle?: Prisma.LoginThrottleOmit
   callSession?: Prisma.CallSessionOmit
   conversation?: Prisma.ConversationOmit
   conversationMember?: Prisma.ConversationMemberOmit

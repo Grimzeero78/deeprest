@@ -136,6 +136,16 @@ model SOSAlert {
   @@map("sos_alerts")
 }
 
+// Cross-isolate login throttling — in-memory Maps die with each Workers
+// isolate, so failed-login counters live in D1 to survive round-robin.
+model LoginThrottle {
+  key         String   @id // e.g. "acct:isaac" or "ip:1.2.3.4"
+  fails       Int      @default(0)
+  windowStart DateTime @map("window_start") @default(now())
+
+  @@map("login_throttle")
+}
+
 // Simulated WebRTC / Cloudflare Calls signaling state machine
 model CallSession {
   id         String    @id @default(cuid())

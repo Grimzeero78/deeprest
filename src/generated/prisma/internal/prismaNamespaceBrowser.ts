@@ -56,6 +56,7 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   DuoPartnership: 'DuoPartnership',
   SOSAlert: 'SOSAlert',
+  LoginThrottle: 'LoginThrottle',
   CallSession: 'CallSession',
   Conversation: 'Conversation',
   ConversationMember: 'ConversationMember',
@@ -166,6 +167,15 @@ export const SOSAlertScalarFieldEnum = {
 } as const
 
 export type SOSAlertScalarFieldEnum = (typeof SOSAlertScalarFieldEnum)[keyof typeof SOSAlertScalarFieldEnum]
+
+
+export const LoginThrottleScalarFieldEnum = {
+  key: 'key',
+  fails: 'fails',
+  windowStart: 'windowStart'
+} as const
+
+export type LoginThrottleScalarFieldEnum = (typeof LoginThrottleScalarFieldEnum)[keyof typeof LoginThrottleScalarFieldEnum]
 
 
 export const CallSessionScalarFieldEnum = {

@@ -34,7 +34,8 @@ check("login brute force throttled (429 appears)", 429 in codes, f"codes={codes}
 s = requests.Session(); s.headers["Authorization"] = f"Bearer {TA}"
 r = s.patch(f"{BASE}/api/profile", json={"name": "<img src=x onerror=alert(1)>"}, timeout=20)
 body = json.dumps(r.json())
-check("name HTML chars stripped", r.status_code == 200 and "<" not in body and "onerror" not in body, body[:120])
+dangerous = [t for t in ("<", ">", "onerror=", "javascript:", "&lt;script") if t in body]
+check("name HTML chars stripped (inert text may remain)", r.status_code == 200 and not dangerous, f"dangerous={dangerous}")
 # rename also moved the username -> login as the new name works
 new_name = r.json()["user"]["name"]
 r2 = requests.post(f"{BASE}/api/auth/login", json={"name": new_name, "password": A["password"]}, timeout=20)
