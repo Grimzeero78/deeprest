@@ -141,3 +141,26 @@ Stage Summary:
 - Automatic screen time is now REAL on Android: UsageStatsManager reads actual per-app foreground minutes; no fake data anywhere
 - Honest limits preserved: per-URL history impossible on Android (platform), iOS needs Screen Time API entitlement later
 - User next step: build APK (eas build -p android --profile preview) or expo run:android, grant Usage Access, sync
+
+---
+Task ID: 8
+Agent: main (Z.ai)
+Task: Ship user's feature requests — WhatsApp-style chats, profiles, no-verse Shepherd AI, favicon fix, breach-password guard + fix EAS Android build
+
+Work Log:
+- EAS build 9333e5b4 ERRORED: decoded binary (brotli) EAS log -> ":deeprest-usage:compileReleaseKotlin — Unresolved reference 'definition'" — wrong import path; fixed to expo.modules.kotlin.ModuleDefinition; resubmitted build 51127f27 (IN_QUEUE, cron 478102 auto-checks)
+- DISCOVERY: user's requested features (DMs, groups, profiles, ranks view, clear AI chat, no-citation Shepherd) were fully built locally in a previous session but NEVER committed/deployed — production ran the OLD code (Shepherd prompt that cites "book and verse", z.ai favicon, no social APIs UI). Commit 9734fd5 (Kotlin fix) had swept the local build-out into git; this session finished the job
+- D1 migration 002_social.sql verified ALREADY APPLIED on remote (users has avatar_image/avatar_emoji/bio; conversations/conversation_members/direct_messages exist; users: isaac + pinky real accounts kept)
+- Favicon: generated public/favicon.ico (16/32/48 moon) via scripts/make-favicon.py; layout.tsx icon links cache-busted with ?v=2; icon assets normalized to public/ only (src/app icons crash Next 16 Turbopack per scripts/gen-icons.cjs note; fixed Buffer.concat typo in that script)
+- Shepherd persona hardened: RULE #1 forbids ANY Bible book/chapter/verse reference (explicit forbidden list + WRONG/RIGHT examples); attribute as "God says / Jesus says / Scripture says"; double-check instruction added
+- New src/lib/pwned-check.ts: HIBP k-anonymity breached-password check (SHA-1 prefix only, Add-Padding, 4s timeout, fail-open) wired into register AND /api/profile/password — matches the Chrome "password in data breach" warning the user saw
+- next.config.ts: removed webpack key ("Call retries were exceeded" = webpack worker OOM on 2-CPU/4GB); Turbopack builds clean
+- Deployed to Workers version 0f45fab3 (bindings: D1 deeprest-db, AI llama-3.3-70b, ASSETS)
+- Production E2E 21/21 PASS: favicon.ico+links, breach-block (Password123 rejected), register x2, /me, profile bio+emoji, directory search w/ ranks, DM create/send/read/unread, group create/2 posters/history, Shepherd reply 540ch with ZERO book/verse matches + "Jesus says" attribution, clear chat (cleared=2), leaderboard 9 leaders w/ ranks + my position
+- Cleaned 7 test accounts + their chats/DMs/groups from production D1 (kept isaac, pinky)
+- Pushed 01c0010 to GitHub main
+
+Stage Summary:
+- Production now matches the full feature set: WhatsApp-style DMs/groups, WhatsApp-style profiles (photo/bio/emoji), 10-rank ladder + leaderboard + member directory with ranks, clear-AI-chat button, Shepherd quotes Scripture WITHOUT chapter/verse ("God says/Jesus says"), DeepRest moon favicon everywhere, breached passwords blocked at signup and password change
+- Chrome breach warning explained to user: it's Chrome checking the password against public breach lists — the fix is a unique password; DeepRest now enforces this itself
+- Pending: EAS build 51127f27 (Kotlin-fixed APK) — cron 478102 reports when FINISHED with the APK link
