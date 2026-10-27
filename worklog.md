@@ -21,3 +21,23 @@ Stage Summary:
 - Production migration artifacts: cloudflare/schema.sql + worker-cron.js + README mapping every demo piece to D1/KV/R2/Calls/WAF
 - Verified end-to-end with two concurrent browser sessions (Alex + Jordan) across all golden paths
 - Screenshots in /home/z/my-project/download/verify-*.png
+
+---
+Task ID: 2
+Agent: main (Z.ai)
+Task: Remove email login — switch to name + password + confirm-password + hint; push work to GitHub (Grimzeero78/deeprest)
+
+Work Log:
+- Prisma schema: dropped User.email; added username (unique, lowercased login id) + passwordHint; db pushed with --force-reset (demo rows discarded)
+- lib/auth.ts: SessionPayload email -> username; lib/sanitize.ts: normalizeEmail -> normalizeName + toUsername
+- /api/auth/register: accepts {name, password, confirmPassword, hint}; enforces 2-40 char name, 8+ char password, exact confirm match; stores sanitized optional hint (120 chars)
+- /api/auth/login: signs in by name only (case-insensitive via username); failed attempts return {error, hint} so users recover their memory
+- /api/auth/me + types.ts: email removed, username exposed
+- AuthScreen.tsx: register form = Name / Password / Confirm password (live mismatch warning) / optional hint; login form = Name / Password; failed login renders amber hint box (Lightbulb icon); brand panel now says "No email needed"
+- cloudflare/schema.sql: users table synced (username UNIQUE, password_hint)
+- E2E verified via curl: register OK, mismatch rejected, case-insensitive login OK, wrong password returns hint, /me has username, duplicate name rejected; dev server restarted to pick up regenerated Prisma Client
+- Git hygiene: untracked .env + db/custom.db, ignore db/; remote origin = github.com/Grimzeero78/deeprest (was empty repo)
+
+Stage Summary:
+- Auth is now email-free: name + password + confirm + optional hint, hint auto-shown on failed sign-in
+- Work pushed to GitHub main (public repo Grimzeero78/deeprest)
