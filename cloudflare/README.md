@@ -21,34 +21,34 @@ Every feature maps 1:1 to your target stack. This folder holds the production ar
 
 1. **Create resources**
    ```bash
-   wrangler d1 create deeprest-db
-   wrangler kv:namespace create RATE_LIMIT
+   wrangler d1 create deeprest-db        # copy the database_id into wrangler.toml
+   wrangler kv namespace create RATE_LIMIT
    wrangler r2 bucket create deeprest-media
    ```
 
-2. **Apply the schema**
+2. **Point `wrangler.toml` at your database** — `cloudflare/wrangler.toml` already
+   contains the D1 binding (`database_id = 28688ccf-…`); update `database_name`
+   if you named yours differently, and paste the KV namespace ids when created.
+
+3. **Apply the schema** (creates all tables inside your D1 database)
    ```bash
-   wrangler d1 execute deeprest-db --file=./cloudflare/schema.sql --remote
+   wrangler d1 execute deeprest-db --remote --file=./cloudflare/schema.sql
    ```
 
-3. **Deploy the cron worker**
-   - Add `cloudflare/worker-cron.js` as a Worker with:
-     ```toml
-     name = "deeprest-cron"
-     [triggers]
-       crons = ["0 23 * * *"]   # daily scoring at 23:59 UTC
-     [vars]
-     CRON_SECRET = "<random-secret>"
-     ```
-   - Bind `DB` (D1) and `RATE_LIMIT` (KV).
+4. **Deploy the cron worker**
+   ```bash
+   cd cloudflare && wrangler deploy        # uses wrangler.toml (name, crons, DB binding)
+   ```
+   - Secrets: `wrangler secret put JWT_SECRET`, `wrangler secret put ENCRYPTION_KEY`,
+     `wrangler secret put CRON_SECRET`
 
-4. **WAF rules (dashboard → Security → WAF)**
+5. **WAF rules (dashboard → Security → WAF)**
    - `/api/chat/*`  : rate limit 20 req/min per IP+JWT → managed challenge
    - `/api/sos`     : rate limit 3 req/5min per IP+JWT → block
    - `/api/auth/*`  : rate limit 10 req/min per IP → managed challenge
    - Global: bot fight mode + AI bots blocked.
 
-5. **Secrets** (Worker → Settings → Variables)
+6. **Secrets** (via `wrangler secret put` or Worker → Settings → Variables)
    - `JWT_SECRET`, `ENCRYPTION_KEY` (32+ random chars each), `CRON_SECRET`,
      `TWILIO_AUTH_TOKEN`, `RESEND_API_KEY`.
 

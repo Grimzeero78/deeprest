@@ -41,3 +41,15 @@ Work Log:
 Stage Summary:
 - Auth is now email-free: name + password + confirm + optional hint, hint auto-shown on failed sign-in
 - Work pushed to GitHub main (public repo Grimzeero78/deeprest)
+
+---
+Task ID: 3
+Agent: main (Z.ai)
+Task: Wire user's D1 database UUID into project (wrangler.toml)
+
+Work Log:
+- Created cloudflare/wrangler.toml with user's D1 database_id 28688ccf-5cac-4037-a2b6-ec2e856ebf8a bound as "DB", cron trigger, commented KV/R2 sections, secrets guidance
+- README deploy steps rewritten: create resources -> paste ids in wrangler.toml -> d1 execute schema.sql --remote -> cd cloudflare && wrangler deploy -> WAF -> secrets
+
+Stage Summary:
+- User only needs: cd cloudflare && wrangler deploy + d1 execute to have D1 live with all tables

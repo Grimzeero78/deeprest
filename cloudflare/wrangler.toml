@@ -1,0 +1,44 @@
+# ============================================================
+# DeepRest — Cloudflare Worker configuration (wrangler v4)
+# Place this file at the ROOT of wherever you run `wrangler deploy`.
+# Docs: https://developers.cloudflare.com/workers/wrangler/configuration/
+# ============================================================
+
+name = "deeprest-cron"
+main = "worker-cron.js"
+compatibility_date = "2025-01-01"
+
+# ---------- Cron Trigger: daily screen-time scoring ----------
+[triggers]
+crons = ["0 23 * * *"]   # 23:00 UTC daily (adjust to your users' midnight)
+
+# ---------- D1 Database (the UUID you got from `wrangler d1 create`) ----------
+[[d1_databases]]
+binding = "DB"
+database_name = "deeprest-db"                            # ← change if you named yours differently
+database_id = "28688ccf-5cac-4037-a2b6-ec2e856ebf8a"     # ← YOUR D1 database UUID
+
+# ---------- KV namespaces (create first, then paste the ids) ----------
+# wrangler kv namespace create RATE_LIMIT
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT"
+# id = "<paste-id-from-command-output>"
+
+# wrangler kv namespace create SESSION_REV
+# [[kv_namespaces]]
+# binding = "SESSION_REV"
+# id = "<paste-id-from-command-output>"
+
+# ---------- R2 bucket for call recordings / avatars ----------
+# wrangler r2 bucket create deeprest-media
+# [[r2_buckets]]
+# binding = "MEDIA"
+# bucket_name = "deeprest-media"
+
+# ---------- Non-secret vars (secrets go via `wrangler secret put …`) ----------
+[vars]
+CRON_SECRET = "change-me-to-a-random-secret"
+
+# Secrets (do NOT put in this file — run instead):
+#   wrangler secret put JWT_SECRET
+#   wrangler secret put ENCRYPTION_KEY
