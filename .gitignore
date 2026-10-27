@@ -69,3 +69,5 @@ mobile/android/
 mobile/ios/
 mobile/*.orig
 mobile/.eas/
+tmp-eas/
+tool-results/
