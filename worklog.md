@@ -164,3 +164,18 @@ Stage Summary:
 - Production now matches the full feature set: WhatsApp-style DMs/groups, WhatsApp-style profiles (photo/bio/emoji), 10-rank ladder + leaderboard + member directory with ranks, clear-AI-chat button, Shepherd quotes Scripture WITHOUT chapter/verse ("God says/Jesus says"), DeepRest moon favicon everywhere, breached passwords blocked at signup and password change
 - Chrome breach warning explained to user: it's Chrome checking the password against public breach lists — the fix is a unique password; DeepRest now enforces this itself
 - Pending: EAS build 51127f27 (Kotlin-fixed APK) — cron 478102 reports when FINISHED with the APK link
+
+---
+Task ID: 9
+Agent: main (Z.ai)
+Task: Add Google Search Console site-verification meta tag (user pasted meta tag)
+
+Work Log:
+- src/app/layout.tsx: added metadata.verification.google = oeDfPU047d5Lk5H24rfTv4vU2PEvHqSo0VTYtD4FUUU (Next.js renders exact tag <meta name="google-site-verification" content="..."/>)
+- bun run build:cf clean (Turbopack + OpenNext); token verified present in prerendered homepage cache AND server chunks
+- Committed dc2a4af + pushed to GitHub main
+- Production site healthy (HTTP 200) but NOT yet redeployed: Cloudflare Global API Key not persisted across sessions (by design) — need user to re-share key, or user runs `bun run deploy:cf` locally
+- EAS CLI auth also not persisted this session (cron 478102 still owns EAS build checks)
+
+Stage Summary:
+- Verification tag built, verified in bundle, pushed (dc2a4af). Deploy pending CF credentials.
