@@ -56,7 +56,10 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   DuoPartnership: 'DuoPartnership',
   SOSAlert: 'SOSAlert',
-  CallSession: 'CallSession'
+  CallSession: 'CallSession',
+  Conversation: 'Conversation',
+  ConversationMember: 'ConversationMember',
+  DirectMessage: 'DirectMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -79,6 +82,9 @@ export const UserScalarFieldEnum = {
   passwordHash: 'passwordHash',
   passwordHint: 'passwordHint',
   avatarColor: 'avatarColor',
+  avatarImage: 'avatarImage',
+  avatarEmoji: 'avatarEmoji',
+  bio: 'bio',
   totalPoints: 'totalPoints',
   streak: 'streak',
   lastEvalDate: 'lastEvalDate',
@@ -174,6 +180,42 @@ export const CallSessionScalarFieldEnum = {
 } as const
 
 export type CallSessionScalarFieldEnum = (typeof CallSessionScalarFieldEnum)[keyof typeof CallSessionScalarFieldEnum]
+
+
+export const ConversationScalarFieldEnum = {
+  id: 'id',
+  kind: 'kind',
+  name: 'name',
+  emoji: 'emoji',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
+
+
+export const ConversationMemberScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  userId: 'userId',
+  lastReadAt: 'lastReadAt',
+  joinedAt: 'joinedAt'
+} as const
+
+export type ConversationMemberScalarFieldEnum = (typeof ConversationMemberScalarFieldEnum)[keyof typeof ConversationMemberScalarFieldEnum]
+
+
+export const DirectMessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  senderId: 'senderId',
+  body: 'body',
+  kind: 'kind',
+  createdAt: 'createdAt'
+} as const
+
+export type DirectMessageScalarFieldEnum = (typeof DirectMessageScalarFieldEnum)[keyof typeof DirectMessageScalarFieldEnum]
 
 
 export const SortOrder = {

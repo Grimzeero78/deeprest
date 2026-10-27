@@ -40,6 +40,35 @@ export async function GET(req: NextRequest) {
   }
 }
 
+/** DELETE /api/chat?persona=SHEPHERD -> clear the whole conversation with that companion */
+export async function DELETE(req: NextRequest) {
+  try {
+    const session = await requireSession(req);
+    if (!session) return unauthorized();
+
+    const personaParam = req.nextUrl.searchParams.get("persona");
+    if (!isPersonaId(personaParam)) return badRequest("Invalid persona.");
+    const persona: PersonaId = personaParam;
+
+    const chatSession = await db.chatSession.findUnique({
+      where: { userId_persona: { userId: session.userId, persona } },
+    });
+
+    let cleared = 0;
+    if (chatSession) {
+      // Delete messages first, then the session — explicit, no reliance on DB cascades
+      const result = await db.chatMessage.deleteMany({ where: { sessionId: chatSession.id } });
+      cleared = result.count;
+      await db.chatSession.delete({ where: { id: chatSession.id } });
+    }
+
+    return NextResponse.json({ ok: true, persona, cleared });
+  } catch (err) {
+    console.error("[chat:DELETE]", err);
+    return serverError();
+  }
+}
+
 /** POST /api/chat { persona, message } -> AI reply (persisted encrypted at rest) */
 export async function POST(req: NextRequest) {
   try {

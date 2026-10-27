@@ -52,6 +52,7 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     ".wrangler/**",          // wrangler local dev/preview output
     "db/**",
     "mobile/**",             // Expo mobile app — separate toolchain
+    "scripts/**",            // local build/utility scripts (node CJS)
   ]
 }];
 

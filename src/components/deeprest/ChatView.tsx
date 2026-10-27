@@ -7,8 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
 import ReactMarkdown from "react-markdown";
-import { Church, Compass, Brain, Send, Loader2, Info, Sparkles } from "lucide-react";
+import { Church, Compass, Brain, Send, Loader2, Info, Sparkles, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ChatMsg } from "./types";
 
@@ -34,10 +37,10 @@ const PERSONA_META: PersonaMeta[] = [
     icon: Church,
     gradient: "from-amber-400 to-orange-500",
     ring: "ring-amber-400/60",
-    blurb: "Compassionate but firm in faith. Quotes the Bible and points you back to God.",
+    blurb: "Compassionate but firm in faith. Points you to what God says.",
     starters: [
       "I keep failing even though I pray. What does God say about starting again?",
-      "Give me a verse to hold onto when the urge to scroll hits at night.",
+      "Pray with me tonight — the urge to scroll is strong.",
       "How do I honor God with my rest today?",
     ],
   },
@@ -79,6 +82,8 @@ export function ChatView() {
   const [loaded, setLoaded] = useState(false);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [clearOpen, setClearOpen] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -103,6 +108,24 @@ export function ChatView() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, sending]);
+
+  async function clearChat() {
+    if (clearing) return;
+    setClearing(true);
+    try {
+      const res = await fetch(`/api/chat?persona=${persona}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast({ title: "Could not clear chat", description: data.error, variant: "destructive" });
+        return;
+      }
+      setMessages([]);
+      setClearOpen(false);
+      toast({ title: "Chat cleared", description: `Your conversation with ${meta.name} starts fresh.` });
+    } finally {
+      setClearing(false);
+    }
+  }
 
   async function send(text?: string) {
     const content = (text ?? input).trim();
@@ -171,9 +194,16 @@ export function ChatView() {
             <p className="text-sm font-semibold text-white">{meta.name}</p>
             <p className="text-xs text-slate-400">{meta.blurb}</p>
           </div>
-          <Badge variant="outline" className="border-emerald-400/30 bg-emerald-500/10 text-[10px] text-emerald-300">
+          <Badge variant="outline" className="hidden border-emerald-400/30 bg-emerald-500/10 text-[10px] text-emerald-300 sm:inline-flex">
             <Sparkles className="mr-1 h-3 w-3" /> AES-256 encrypted at rest
           </Badge>
+          <Button
+            variant="ghost" size="icon" onClick={() => setClearOpen(true)}
+            disabled={messages.length === 0} aria-label={`Clear chat with ${meta.name}`}
+            className="h-8 w-8 shrink-0 text-slate-400 hover:bg-rose-500/10 hover:text-rose-300"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
 
         {meta.disclaimer && (
@@ -282,6 +312,29 @@ export function ChatView() {
           </div>
         </div>
       </Card>
+
+      {/* Clear-chat confirmation */}
+      <Dialog open={clearOpen} onOpenChange={setClearOpen}>
+        <DialogContent className="border-white/10 bg-[#0d1228] text-slate-100 sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-white">
+              <Trash2 className="h-4 w-4 text-rose-300" /> Clear this chat?
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Your whole conversation with {meta.name} will be permanently deleted. A fresh chat will start with the same greeting.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="ghost" onClick={() => setClearOpen(false)} className="text-slate-300 hover:bg-white/10 hover:text-white">
+              Keep chat
+            </Button>
+            <Button onClick={clearChat} disabled={clearing}
+              className="bg-gradient-to-r from-rose-500 to-red-500 text-white hover:from-rose-400 hover:to-red-400">
+              {clearing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Clear chat
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -289,7 +342,7 @@ export function ChatView() {
 function getGreeting(id: PersonaId): string {
   switch (id) {
     case "SHEPHERD":
-      return "Peace be with you. I am The Shepherd. \"Come to me, all you who are weary and burdened, and I will give you rest.\" — Matthew 11:28. How is your heart today?";
+      return "Peace be with you. I am The Shepherd. Whatever brought you here tonight, know this: you are not walking this road alone. Jesus says, \"Come to me, all you who are weary and burdened, and I will give you rest.\" How is your heart today?";
     case "GUIDE":
       return "Hey, I'm The Guide — your everyday coach. I'm here with practical ideas, hobbies, and small wins that make screen-free time actually enjoyable. What's one thing you'd love to do tonight without a screen?";
     case "COUNSELOR":

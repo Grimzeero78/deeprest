@@ -18,6 +18,9 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT NOT NULL,                          -- scrypt (or PBKDF2) "salt:hash"
   password_hint TEXT,                                   -- optional hint returned on failed sign-in
   avatar_color  TEXT NOT NULL DEFAULT '#8b5cf6',
+  avatar_image  TEXT,                                   -- WhatsApp-style profile photo (small data URL)
+  avatar_emoji  TEXT,                                   -- optional emoji avatar
+  bio           TEXT,                                   -- WhatsApp-style "About" status
   total_points  INTEGER NOT NULL DEFAULT 0,             -- XP driving the 10-rank ladder
   streak        INTEGER NOT NULL DEFAULT 0,             -- consecutive days meeting target
   last_eval_date TEXT,                                  -- last date scored by Cron (YYYY-MM-DD)
@@ -107,6 +110,38 @@ CREATE TABLE IF NOT EXISTS call_sessions (
 );
 CREATE INDEX IF NOT EXISTS idx_call_caller ON call_sessions(caller_id);
 CREATE INDEX IF NOT EXISTS idx_call_callee ON call_sessions(callee_id, status);
+
+-- ---------- Community: WhatsApp-style DMs & groups ----------
+CREATE TABLE IF NOT EXISTS conversations (
+  id         TEXT PRIMARY KEY,
+  kind       TEXT NOT NULL DEFAULT 'dm' CHECK (kind IN ('dm','group')),
+  name       TEXT,                                       -- group name (NULL for DMs)
+  emoji      TEXT,                                       -- group avatar emoji
+  created_by TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_conv_updated ON conversations(updated_at);
+
+CREATE TABLE IF NOT EXISTS conversation_members (
+  id             TEXT PRIMARY KEY,
+  conversation_id TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+  user_id        TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  last_read_at   TEXT,                                   -- unread tracking (ISO timestamp)
+  joined_at      TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (conversation_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_cmember_user ON conversation_members(user_id);
+
+CREATE TABLE IF NOT EXISTS direct_messages (
+  id             TEXT PRIMARY KEY,
+  conversation_id TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+  sender_id      TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  body           TEXT NOT NULL,
+  kind           TEXT NOT NULL DEFAULT 'text' CHECK (kind IN ('text','system')),
+  created_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_dm_convo ON direct_messages(conversation_id, created_at);
 
 -- ---------- KV namespaces (wrangler.toml binding suggestions) ----------
 -- KV "RATE_LIMIT"   : sliding-window counters for /ai + /sos (WAF offload)

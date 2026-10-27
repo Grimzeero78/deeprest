@@ -53,6 +53,8 @@ export function rateLimit(key: string, limit: number, windowMs: number): RateLim
 // Presets
 export const LIMITS = {
   chat: (userId: string) => rateLimit(`chat:${userId}`, 20, 60_000), // 20 msgs/min per persona chat
+  social: (userId: string) => rateLimit(`social:${userId}`, 40, 60_000), // 40 community msgs/min
+  profile: (userId: string) => rateLimit(`profile:${userId}`, 10, 60_000), // profile/password edits
   sos: (userId: string) => rateLimit(`sos:${userId}`, 3, 5 * 60_000), // 3 SOS per 5 min
   auth: (ip: string) => rateLimit(`auth:${ip}`, 10, 60_000), // 10 login/register attempts/min
   call: (userId: string) => rateLimit(`call:${userId}`, 6, 60_000),

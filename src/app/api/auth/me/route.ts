@@ -44,8 +44,12 @@ export async function GET(req: NextRequest) {
         name: user.name,
         username: user.username,
         avatarColor: user.avatarColor,
+        avatarImage: user.avatarImage,
+        avatarEmoji: user.avatarEmoji,
+        bio: user.bio,
         totalPoints: user.totalPoints,
         streak: user.streak,
+        memberSince: user.createdAt,
       },
       settings: { dailyTargetMin: user.settings?.dailyTargetMin ?? 360 },
       today: {

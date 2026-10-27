@@ -10,6 +10,10 @@ export function badRequest(message: string) {
   return NextResponse.json({ error: message }, { status: 400 });
 }
 
+export function notFound(message: string) {
+  return NextResponse.json({ error: message }, { status: 404 });
+}
+
 export function tooMany(retryAfterSec: number) {
   return NextResponse.json(
     { error: `Rate limit reached. Try again in ${retryAfterSec}s.` },

@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "icon": "./assets/icon.png",
     "android": {
       "package": "com.deeprest.app",
       "permissions": [
@@ -13,7 +14,8 @@
         "android.permission.INTERNET"
       ],
       "adaptiveIcon": {
-        "backgroundColor": "#1e1b4b"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#070b1e"
       }
     },
     "extra": {

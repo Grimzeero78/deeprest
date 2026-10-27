@@ -43,6 +43,9 @@ export type UserMinAggregateOutputType = {
   passwordHash: string | null
   passwordHint: string | null
   avatarColor: string | null
+  avatarImage: string | null
+  avatarEmoji: string | null
+  bio: string | null
   totalPoints: number | null
   streak: number | null
   lastEvalDate: string | null
@@ -57,6 +60,9 @@ export type UserMaxAggregateOutputType = {
   passwordHash: string | null
   passwordHint: string | null
   avatarColor: string | null
+  avatarImage: string | null
+  avatarEmoji: string | null
+  bio: string | null
   totalPoints: number | null
   streak: number | null
   lastEvalDate: string | null
@@ -71,6 +77,9 @@ export type UserCountAggregateOutputType = {
   passwordHash: number
   passwordHint: number
   avatarColor: number
+  avatarImage: number
+  avatarEmoji: number
+  bio: number
   totalPoints: number
   streak: number
   lastEvalDate: number
@@ -97,6 +106,9 @@ export type UserMinAggregateInputType = {
   passwordHash?: true
   passwordHint?: true
   avatarColor?: true
+  avatarImage?: true
+  avatarEmoji?: true
+  bio?: true
   totalPoints?: true
   streak?: true
   lastEvalDate?: true
@@ -111,6 +123,9 @@ export type UserMaxAggregateInputType = {
   passwordHash?: true
   passwordHint?: true
   avatarColor?: true
+  avatarImage?: true
+  avatarEmoji?: true
+  bio?: true
   totalPoints?: true
   streak?: true
   lastEvalDate?: true
@@ -125,6 +140,9 @@ export type UserCountAggregateInputType = {
   passwordHash?: true
   passwordHint?: true
   avatarColor?: true
+  avatarImage?: true
+  avatarEmoji?: true
+  bio?: true
   totalPoints?: true
   streak?: true
   lastEvalDate?: true
@@ -226,6 +244,9 @@ export type UserGroupByOutputType = {
   passwordHash: string
   passwordHint: string | null
   avatarColor: string
+  avatarImage: string | null
+  avatarEmoji: string | null
+  bio: string | null
   totalPoints: number
   streak: number
   lastEvalDate: string | null
@@ -263,6 +284,9 @@ export type UserWhereInput = {
   passwordHash?: Prisma.StringFilter<"User"> | string
   passwordHint?: Prisma.StringNullableFilter<"User"> | string | null
   avatarColor?: Prisma.StringFilter<"User"> | string
+  avatarImage?: Prisma.StringNullableFilter<"User"> | string | null
+  avatarEmoji?: Prisma.StringNullableFilter<"User"> | string | null
+  bio?: Prisma.StringNullableFilter<"User"> | string | null
   totalPoints?: Prisma.IntFilter<"User"> | number
   streak?: Prisma.IntFilter<"User"> | number
   lastEvalDate?: Prisma.StringNullableFilter<"User"> | string | null
@@ -274,6 +298,8 @@ export type UserWhereInput = {
   duosInitiated?: Prisma.DuoPartnershipListRelationFilter
   duosJoined?: Prisma.DuoPartnershipListRelationFilter
   sosAlertsSent?: Prisma.SOSAlertListRelationFilter
+  convoMemberships?: Prisma.ConversationMemberListRelationFilter
+  messagesSent?: Prisma.DirectMessageListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -283,6 +309,9 @@ export type UserOrderByWithRelationInput = {
   passwordHash?: Prisma.SortOrder
   passwordHint?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarColor?: Prisma.SortOrder
+  avatarImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  avatarEmoji?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
   totalPoints?: Prisma.SortOrder
   streak?: Prisma.SortOrder
   lastEvalDate?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -294,6 +323,8 @@ export type UserOrderByWithRelationInput = {
   duosInitiated?: Prisma.DuoPartnershipOrderByRelationAggregateInput
   duosJoined?: Prisma.DuoPartnershipOrderByRelationAggregateInput
   sosAlertsSent?: Prisma.SOSAlertOrderByRelationAggregateInput
+  convoMemberships?: Prisma.ConversationMemberOrderByRelationAggregateInput
+  messagesSent?: Prisma.DirectMessageOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -306,6 +337,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   passwordHash?: Prisma.StringFilter<"User"> | string
   passwordHint?: Prisma.StringNullableFilter<"User"> | string | null
   avatarColor?: Prisma.StringFilter<"User"> | string
+  avatarImage?: Prisma.StringNullableFilter<"User"> | string | null
+  avatarEmoji?: Prisma.StringNullableFilter<"User"> | string | null
+  bio?: Prisma.StringNullableFilter<"User"> | string | null
   totalPoints?: Prisma.IntFilter<"User"> | number
   streak?: Prisma.IntFilter<"User"> | number
   lastEvalDate?: Prisma.StringNullableFilter<"User"> | string | null
@@ -317,6 +351,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   duosInitiated?: Prisma.DuoPartnershipListRelationFilter
   duosJoined?: Prisma.DuoPartnershipListRelationFilter
   sosAlertsSent?: Prisma.SOSAlertListRelationFilter
+  convoMemberships?: Prisma.ConversationMemberListRelationFilter
+  messagesSent?: Prisma.DirectMessageListRelationFilter
 }, "id" | "username">
 
 export type UserOrderByWithAggregationInput = {
@@ -326,6 +362,9 @@ export type UserOrderByWithAggregationInput = {
   passwordHash?: Prisma.SortOrder
   passwordHint?: Prisma.SortOrderInput | Prisma.SortOrder
   avatarColor?: Prisma.SortOrder
+  avatarImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  avatarEmoji?: Prisma.SortOrderInput | Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
   totalPoints?: Prisma.SortOrder
   streak?: Prisma.SortOrder
   lastEvalDate?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -348,6 +387,9 @@ export type UserScalarWhereWithAggregatesInput = {
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
   passwordHint?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   avatarColor?: Prisma.StringWithAggregatesFilter<"User"> | string
+  avatarImage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  avatarEmoji?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  bio?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   totalPoints?: Prisma.IntWithAggregatesFilter<"User"> | number
   streak?: Prisma.IntWithAggregatesFilter<"User"> | number
   lastEvalDate?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -362,6 +404,9 @@ export type UserCreateInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -373,6 +418,8 @@ export type UserCreateInput = {
   duosInitiated?: Prisma.DuoPartnershipCreateNestedManyWithoutInitiatorInput
   duosJoined?: Prisma.DuoPartnershipCreateNestedManyWithoutPartnerInput
   sosAlertsSent?: Prisma.SOSAlertCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -382,6 +429,9 @@ export type UserUncheckedCreateInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -393,6 +443,8 @@ export type UserUncheckedCreateInput = {
   duosInitiated?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutInitiatorInput
   duosJoined?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutPartnerInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserUpdateInput = {
@@ -402,6 +454,9 @@ export type UserUpdateInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -413,6 +468,8 @@ export type UserUpdateInput = {
   duosInitiated?: Prisma.DuoPartnershipUpdateManyWithoutInitiatorNestedInput
   duosJoined?: Prisma.DuoPartnershipUpdateManyWithoutPartnerNestedInput
   sosAlertsSent?: Prisma.SOSAlertUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -422,6 +479,9 @@ export type UserUncheckedUpdateInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -433,6 +493,8 @@ export type UserUncheckedUpdateInput = {
   duosInitiated?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutInitiatorNestedInput
   duosJoined?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutPartnerNestedInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -442,6 +504,9 @@ export type UserCreateManyInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -456,6 +521,9 @@ export type UserUpdateManyMutationInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -470,6 +538,9 @@ export type UserUncheckedUpdateManyInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -484,6 +555,9 @@ export type UserCountOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   passwordHint?: Prisma.SortOrder
   avatarColor?: Prisma.SortOrder
+  avatarImage?: Prisma.SortOrder
+  avatarEmoji?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
   totalPoints?: Prisma.SortOrder
   streak?: Prisma.SortOrder
   lastEvalDate?: Prisma.SortOrder
@@ -503,6 +577,9 @@ export type UserMaxOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   passwordHint?: Prisma.SortOrder
   avatarColor?: Prisma.SortOrder
+  avatarImage?: Prisma.SortOrder
+  avatarEmoji?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
   totalPoints?: Prisma.SortOrder
   streak?: Prisma.SortOrder
   lastEvalDate?: Prisma.SortOrder
@@ -517,6 +594,9 @@ export type UserMinOrderByAggregateInput = {
   passwordHash?: Prisma.SortOrder
   passwordHint?: Prisma.SortOrder
   avatarColor?: Prisma.SortOrder
+  avatarImage?: Prisma.SortOrder
+  avatarEmoji?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
   totalPoints?: Prisma.SortOrder
   streak?: Prisma.SortOrder
   lastEvalDate?: Prisma.SortOrder
@@ -645,6 +725,34 @@ export type UserUpdateOneRequiredWithoutSosAlertsSentNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSosAlertsSentInput, Prisma.UserUpdateWithoutSosAlertsSentInput>, Prisma.UserUncheckedUpdateWithoutSosAlertsSentInput>
 }
 
+export type UserCreateNestedOneWithoutConvoMembershipsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConvoMembershipsInput, Prisma.UserUncheckedCreateWithoutConvoMembershipsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConvoMembershipsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutConvoMembershipsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutConvoMembershipsInput, Prisma.UserUncheckedCreateWithoutConvoMembershipsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutConvoMembershipsInput
+  upsert?: Prisma.UserUpsertWithoutConvoMembershipsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutConvoMembershipsInput, Prisma.UserUpdateWithoutConvoMembershipsInput>, Prisma.UserUncheckedUpdateWithoutConvoMembershipsInput>
+}
+
+export type UserCreateNestedOneWithoutMessagesSentInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMessagesSentInput, Prisma.UserUncheckedCreateWithoutMessagesSentInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessagesSentInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMessagesSentNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMessagesSentInput, Prisma.UserUncheckedCreateWithoutMessagesSentInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessagesSentInput
+  upsert?: Prisma.UserUpsertWithoutMessagesSentInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMessagesSentInput, Prisma.UserUpdateWithoutMessagesSentInput>, Prisma.UserUncheckedUpdateWithoutMessagesSentInput>
+}
+
 export type UserCreateWithoutSettingsInput = {
   id?: string
   username: string
@@ -652,6 +760,9 @@ export type UserCreateWithoutSettingsInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -662,6 +773,8 @@ export type UserCreateWithoutSettingsInput = {
   duosInitiated?: Prisma.DuoPartnershipCreateNestedManyWithoutInitiatorInput
   duosJoined?: Prisma.DuoPartnershipCreateNestedManyWithoutPartnerInput
   sosAlertsSent?: Prisma.SOSAlertCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutSettingsInput = {
@@ -671,6 +784,9 @@ export type UserUncheckedCreateWithoutSettingsInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -681,6 +797,8 @@ export type UserUncheckedCreateWithoutSettingsInput = {
   duosInitiated?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutInitiatorInput
   duosJoined?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutPartnerInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutSettingsInput = {
@@ -706,6 +824,9 @@ export type UserUpdateWithoutSettingsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -716,6 +837,8 @@ export type UserUpdateWithoutSettingsInput = {
   duosInitiated?: Prisma.DuoPartnershipUpdateManyWithoutInitiatorNestedInput
   duosJoined?: Prisma.DuoPartnershipUpdateManyWithoutPartnerNestedInput
   sosAlertsSent?: Prisma.SOSAlertUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSettingsInput = {
@@ -725,6 +848,9 @@ export type UserUncheckedUpdateWithoutSettingsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -735,6 +861,8 @@ export type UserUncheckedUpdateWithoutSettingsInput = {
   duosInitiated?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutInitiatorNestedInput
   duosJoined?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutPartnerNestedInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateWithoutScreenLogsInput = {
@@ -744,6 +872,9 @@ export type UserCreateWithoutScreenLogsInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -754,6 +885,8 @@ export type UserCreateWithoutScreenLogsInput = {
   duosInitiated?: Prisma.DuoPartnershipCreateNestedManyWithoutInitiatorInput
   duosJoined?: Prisma.DuoPartnershipCreateNestedManyWithoutPartnerInput
   sosAlertsSent?: Prisma.SOSAlertCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutScreenLogsInput = {
@@ -763,6 +896,9 @@ export type UserUncheckedCreateWithoutScreenLogsInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -773,6 +909,8 @@ export type UserUncheckedCreateWithoutScreenLogsInput = {
   duosInitiated?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutInitiatorInput
   duosJoined?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutPartnerInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutScreenLogsInput = {
@@ -798,6 +936,9 @@ export type UserUpdateWithoutScreenLogsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -808,6 +949,8 @@ export type UserUpdateWithoutScreenLogsInput = {
   duosInitiated?: Prisma.DuoPartnershipUpdateManyWithoutInitiatorNestedInput
   duosJoined?: Prisma.DuoPartnershipUpdateManyWithoutPartnerNestedInput
   sosAlertsSent?: Prisma.SOSAlertUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutScreenLogsInput = {
@@ -817,6 +960,9 @@ export type UserUncheckedUpdateWithoutScreenLogsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -827,6 +973,8 @@ export type UserUncheckedUpdateWithoutScreenLogsInput = {
   duosInitiated?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutInitiatorNestedInput
   duosJoined?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutPartnerNestedInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateWithoutChatSessionsInput = {
@@ -836,6 +984,9 @@ export type UserCreateWithoutChatSessionsInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -846,6 +997,8 @@ export type UserCreateWithoutChatSessionsInput = {
   duosInitiated?: Prisma.DuoPartnershipCreateNestedManyWithoutInitiatorInput
   duosJoined?: Prisma.DuoPartnershipCreateNestedManyWithoutPartnerInput
   sosAlertsSent?: Prisma.SOSAlertCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutChatSessionsInput = {
@@ -855,6 +1008,9 @@ export type UserUncheckedCreateWithoutChatSessionsInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -865,6 +1021,8 @@ export type UserUncheckedCreateWithoutChatSessionsInput = {
   duosInitiated?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutInitiatorInput
   duosJoined?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutPartnerInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutChatSessionsInput = {
@@ -890,6 +1048,9 @@ export type UserUpdateWithoutChatSessionsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -900,6 +1061,8 @@ export type UserUpdateWithoutChatSessionsInput = {
   duosInitiated?: Prisma.DuoPartnershipUpdateManyWithoutInitiatorNestedInput
   duosJoined?: Prisma.DuoPartnershipUpdateManyWithoutPartnerNestedInput
   sosAlertsSent?: Prisma.SOSAlertUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChatSessionsInput = {
@@ -909,6 +1072,9 @@ export type UserUncheckedUpdateWithoutChatSessionsInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -919,6 +1085,8 @@ export type UserUncheckedUpdateWithoutChatSessionsInput = {
   duosInitiated?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutInitiatorNestedInput
   duosJoined?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutPartnerNestedInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateWithoutDuosInitiatedInput = {
@@ -928,6 +1096,9 @@ export type UserCreateWithoutDuosInitiatedInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -938,6 +1109,8 @@ export type UserCreateWithoutDuosInitiatedInput = {
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   duosJoined?: Prisma.DuoPartnershipCreateNestedManyWithoutPartnerInput
   sosAlertsSent?: Prisma.SOSAlertCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutDuosInitiatedInput = {
@@ -947,6 +1120,9 @@ export type UserUncheckedCreateWithoutDuosInitiatedInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -957,6 +1133,8 @@ export type UserUncheckedCreateWithoutDuosInitiatedInput = {
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   duosJoined?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutPartnerInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutDuosInitiatedInput = {
@@ -971,6 +1149,9 @@ export type UserCreateWithoutDuosJoinedInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -981,6 +1162,8 @@ export type UserCreateWithoutDuosJoinedInput = {
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   duosInitiated?: Prisma.DuoPartnershipCreateNestedManyWithoutInitiatorInput
   sosAlertsSent?: Prisma.SOSAlertCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutDuosJoinedInput = {
@@ -990,6 +1173,9 @@ export type UserUncheckedCreateWithoutDuosJoinedInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -1000,6 +1186,8 @@ export type UserUncheckedCreateWithoutDuosJoinedInput = {
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   duosInitiated?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutInitiatorInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutDuosJoinedInput = {
@@ -1025,6 +1213,9 @@ export type UserUpdateWithoutDuosInitiatedInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1035,6 +1226,8 @@ export type UserUpdateWithoutDuosInitiatedInput = {
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   duosJoined?: Prisma.DuoPartnershipUpdateManyWithoutPartnerNestedInput
   sosAlertsSent?: Prisma.SOSAlertUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDuosInitiatedInput = {
@@ -1044,6 +1237,9 @@ export type UserUncheckedUpdateWithoutDuosInitiatedInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1054,6 +1250,8 @@ export type UserUncheckedUpdateWithoutDuosInitiatedInput = {
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   duosJoined?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutPartnerNestedInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUpsertWithoutDuosJoinedInput = {
@@ -1074,6 +1272,9 @@ export type UserUpdateWithoutDuosJoinedInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1084,6 +1285,8 @@ export type UserUpdateWithoutDuosJoinedInput = {
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   duosInitiated?: Prisma.DuoPartnershipUpdateManyWithoutInitiatorNestedInput
   sosAlertsSent?: Prisma.SOSAlertUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDuosJoinedInput = {
@@ -1093,6 +1296,9 @@ export type UserUncheckedUpdateWithoutDuosJoinedInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1103,6 +1309,8 @@ export type UserUncheckedUpdateWithoutDuosJoinedInput = {
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   duosInitiated?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutInitiatorNestedInput
   sosAlertsSent?: Prisma.SOSAlertUncheckedUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
 }
 
 export type UserCreateWithoutSosAlertsSentInput = {
@@ -1112,6 +1320,9 @@ export type UserCreateWithoutSosAlertsSentInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -1122,6 +1333,8 @@ export type UserCreateWithoutSosAlertsSentInput = {
   chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
   duosInitiated?: Prisma.DuoPartnershipCreateNestedManyWithoutInitiatorInput
   duosJoined?: Prisma.DuoPartnershipCreateNestedManyWithoutPartnerInput
+  convoMemberships?: Prisma.ConversationMemberCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
 }
 
 export type UserUncheckedCreateWithoutSosAlertsSentInput = {
@@ -1131,6 +1344,9 @@ export type UserUncheckedCreateWithoutSosAlertsSentInput = {
   passwordHash: string
   passwordHint?: string | null
   avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
   totalPoints?: number
   streak?: number
   lastEvalDate?: string | null
@@ -1141,6 +1357,8 @@ export type UserUncheckedCreateWithoutSosAlertsSentInput = {
   chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
   duosInitiated?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutInitiatorInput
   duosJoined?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutPartnerInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutUserInput
+  messagesSent?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
 }
 
 export type UserCreateOrConnectWithoutSosAlertsSentInput = {
@@ -1166,6 +1384,9 @@ export type UserUpdateWithoutSosAlertsSentInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1176,6 +1397,8 @@ export type UserUpdateWithoutSosAlertsSentInput = {
   chatSessions?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
   duosInitiated?: Prisma.DuoPartnershipUpdateManyWithoutInitiatorNestedInput
   duosJoined?: Prisma.DuoPartnershipUpdateManyWithoutPartnerNestedInput
+  convoMemberships?: Prisma.ConversationMemberUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSosAlertsSentInput = {
@@ -1185,6 +1408,9 @@ export type UserUncheckedUpdateWithoutSosAlertsSentInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
   streak?: Prisma.IntFieldUpdateOperationsInput | number
   lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1195,6 +1421,232 @@ export type UserUncheckedUpdateWithoutSosAlertsSentInput = {
   chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
   duosInitiated?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutInitiatorNestedInput
   duosJoined?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutPartnerNestedInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedUpdateManyWithoutUserNestedInput
+  messagesSent?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
+}
+
+export type UserCreateWithoutConvoMembershipsInput = {
+  id?: string
+  username: string
+  name: string
+  passwordHash: string
+  passwordHint?: string | null
+  avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
+  totalPoints?: number
+  streak?: number
+  lastEvalDate?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
+  screenLogs?: Prisma.ScreenTimeLogCreateNestedManyWithoutUserInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  duosInitiated?: Prisma.DuoPartnershipCreateNestedManyWithoutInitiatorInput
+  duosJoined?: Prisma.DuoPartnershipCreateNestedManyWithoutPartnerInput
+  sosAlertsSent?: Prisma.SOSAlertCreateNestedManyWithoutSenderInput
+  messagesSent?: Prisma.DirectMessageCreateNestedManyWithoutSenderInput
+}
+
+export type UserUncheckedCreateWithoutConvoMembershipsInput = {
+  id?: string
+  username: string
+  name: string
+  passwordHash: string
+  passwordHint?: string | null
+  avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
+  totalPoints?: number
+  streak?: number
+  lastEvalDate?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
+  screenLogs?: Prisma.ScreenTimeLogUncheckedCreateNestedManyWithoutUserInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  duosInitiated?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutInitiatorInput
+  duosJoined?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutPartnerInput
+  sosAlertsSent?: Prisma.SOSAlertUncheckedCreateNestedManyWithoutSenderInput
+  messagesSent?: Prisma.DirectMessageUncheckedCreateNestedManyWithoutSenderInput
+}
+
+export type UserCreateOrConnectWithoutConvoMembershipsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutConvoMembershipsInput, Prisma.UserUncheckedCreateWithoutConvoMembershipsInput>
+}
+
+export type UserUpsertWithoutConvoMembershipsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutConvoMembershipsInput, Prisma.UserUncheckedUpdateWithoutConvoMembershipsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutConvoMembershipsInput, Prisma.UserUncheckedCreateWithoutConvoMembershipsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutConvoMembershipsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutConvoMembershipsInput, Prisma.UserUncheckedUpdateWithoutConvoMembershipsInput>
+}
+
+export type UserUpdateWithoutConvoMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
+  screenLogs?: Prisma.ScreenTimeLogUpdateManyWithoutUserNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  duosInitiated?: Prisma.DuoPartnershipUpdateManyWithoutInitiatorNestedInput
+  duosJoined?: Prisma.DuoPartnershipUpdateManyWithoutPartnerNestedInput
+  sosAlertsSent?: Prisma.SOSAlertUpdateManyWithoutSenderNestedInput
+  messagesSent?: Prisma.DirectMessageUpdateManyWithoutSenderNestedInput
+}
+
+export type UserUncheckedUpdateWithoutConvoMembershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
+  screenLogs?: Prisma.ScreenTimeLogUncheckedUpdateManyWithoutUserNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  duosInitiated?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutInitiatorNestedInput
+  duosJoined?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutPartnerNestedInput
+  sosAlertsSent?: Prisma.SOSAlertUncheckedUpdateManyWithoutSenderNestedInput
+  messagesSent?: Prisma.DirectMessageUncheckedUpdateManyWithoutSenderNestedInput
+}
+
+export type UserCreateWithoutMessagesSentInput = {
+  id?: string
+  username: string
+  name: string
+  passwordHash: string
+  passwordHint?: string | null
+  avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
+  totalPoints?: number
+  streak?: number
+  lastEvalDate?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  settings?: Prisma.UserSettingsCreateNestedOneWithoutUserInput
+  screenLogs?: Prisma.ScreenTimeLogCreateNestedManyWithoutUserInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutUserInput
+  duosInitiated?: Prisma.DuoPartnershipCreateNestedManyWithoutInitiatorInput
+  duosJoined?: Prisma.DuoPartnershipCreateNestedManyWithoutPartnerInput
+  sosAlertsSent?: Prisma.SOSAlertCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutMessagesSentInput = {
+  id?: string
+  username: string
+  name: string
+  passwordHash: string
+  passwordHint?: string | null
+  avatarColor?: string
+  avatarImage?: string | null
+  avatarEmoji?: string | null
+  bio?: string | null
+  totalPoints?: number
+  streak?: number
+  lastEvalDate?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  settings?: Prisma.UserSettingsUncheckedCreateNestedOneWithoutUserInput
+  screenLogs?: Prisma.ScreenTimeLogUncheckedCreateNestedManyWithoutUserInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutUserInput
+  duosInitiated?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutInitiatorInput
+  duosJoined?: Prisma.DuoPartnershipUncheckedCreateNestedManyWithoutPartnerInput
+  sosAlertsSent?: Prisma.SOSAlertUncheckedCreateNestedManyWithoutSenderInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutMessagesSentInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMessagesSentInput, Prisma.UserUncheckedCreateWithoutMessagesSentInput>
+}
+
+export type UserUpsertWithoutMessagesSentInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMessagesSentInput, Prisma.UserUncheckedUpdateWithoutMessagesSentInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMessagesSentInput, Prisma.UserUncheckedCreateWithoutMessagesSentInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMessagesSentInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMessagesSentInput, Prisma.UserUncheckedUpdateWithoutMessagesSentInput>
+}
+
+export type UserUpdateWithoutMessagesSentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  settings?: Prisma.UserSettingsUpdateOneWithoutUserNestedInput
+  screenLogs?: Prisma.ScreenTimeLogUpdateManyWithoutUserNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutUserNestedInput
+  duosInitiated?: Prisma.DuoPartnershipUpdateManyWithoutInitiatorNestedInput
+  duosJoined?: Prisma.DuoPartnershipUpdateManyWithoutPartnerNestedInput
+  sosAlertsSent?: Prisma.SOSAlertUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMessagesSentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarColor?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatarEmoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPoints?: Prisma.IntFieldUpdateOperationsInput | number
+  streak?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEvalDate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  settings?: Prisma.UserSettingsUncheckedUpdateOneWithoutUserNestedInput
+  screenLogs?: Prisma.ScreenTimeLogUncheckedUpdateManyWithoutUserNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  duosInitiated?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutInitiatorNestedInput
+  duosJoined?: Prisma.DuoPartnershipUncheckedUpdateManyWithoutPartnerNestedInput
+  sosAlertsSent?: Prisma.SOSAlertUncheckedUpdateManyWithoutSenderNestedInput
+  convoMemberships?: Prisma.ConversationMemberUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1208,6 +1660,8 @@ export type UserCountOutputType = {
   duosInitiated: number
   duosJoined: number
   sosAlertsSent: number
+  convoMemberships: number
+  messagesSent: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1216,6 +1670,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   duosInitiated?: boolean | UserCountOutputTypeCountDuosInitiatedArgs
   duosJoined?: boolean | UserCountOutputTypeCountDuosJoinedArgs
   sosAlertsSent?: boolean | UserCountOutputTypeCountSosAlertsSentArgs
+  convoMemberships?: boolean | UserCountOutputTypeCountConvoMembershipsArgs
+  messagesSent?: boolean | UserCountOutputTypeCountMessagesSentArgs
 }
 
 /**
@@ -1263,6 +1719,20 @@ export type UserCountOutputTypeCountSosAlertsSentArgs<ExtArgs extends runtime.Ty
   where?: Prisma.SOSAlertWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountConvoMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ConversationMemberWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMessagesSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DirectMessageWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1271,6 +1741,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   passwordHash?: boolean
   passwordHint?: boolean
   avatarColor?: boolean
+  avatarImage?: boolean
+  avatarEmoji?: boolean
+  bio?: boolean
   totalPoints?: boolean
   streak?: boolean
   lastEvalDate?: boolean
@@ -1282,6 +1755,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   duosInitiated?: boolean | Prisma.User$duosInitiatedArgs<ExtArgs>
   duosJoined?: boolean | Prisma.User$duosJoinedArgs<ExtArgs>
   sosAlertsSent?: boolean | Prisma.User$sosAlertsSentArgs<ExtArgs>
+  convoMemberships?: boolean | Prisma.User$convoMembershipsArgs<ExtArgs>
+  messagesSent?: boolean | Prisma.User$messagesSentArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1292,6 +1767,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordHash?: boolean
   passwordHint?: boolean
   avatarColor?: boolean
+  avatarImage?: boolean
+  avatarEmoji?: boolean
+  bio?: boolean
   totalPoints?: boolean
   streak?: boolean
   lastEvalDate?: boolean
@@ -1306,6 +1784,9 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   passwordHash?: boolean
   passwordHint?: boolean
   avatarColor?: boolean
+  avatarImage?: boolean
+  avatarEmoji?: boolean
+  bio?: boolean
   totalPoints?: boolean
   streak?: boolean
   lastEvalDate?: boolean
@@ -1320,6 +1801,9 @@ export type UserSelectScalar = {
   passwordHash?: boolean
   passwordHint?: boolean
   avatarColor?: boolean
+  avatarImage?: boolean
+  avatarEmoji?: boolean
+  bio?: boolean
   totalPoints?: boolean
   streak?: boolean
   lastEvalDate?: boolean
@@ -1327,7 +1811,7 @@ export type UserSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "name" | "passwordHash" | "passwordHint" | "avatarColor" | "totalPoints" | "streak" | "lastEvalDate" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "name" | "passwordHash" | "passwordHint" | "avatarColor" | "avatarImage" | "avatarEmoji" | "bio" | "totalPoints" | "streak" | "lastEvalDate" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   settings?: boolean | Prisma.User$settingsArgs<ExtArgs>
   screenLogs?: boolean | Prisma.User$screenLogsArgs<ExtArgs>
@@ -1335,6 +1819,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   duosInitiated?: boolean | Prisma.User$duosInitiatedArgs<ExtArgs>
   duosJoined?: boolean | Prisma.User$duosJoinedArgs<ExtArgs>
   sosAlertsSent?: boolean | Prisma.User$sosAlertsSentArgs<ExtArgs>
+  convoMemberships?: boolean | Prisma.User$convoMembershipsArgs<ExtArgs>
+  messagesSent?: boolean | Prisma.User$messagesSentArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1349,6 +1835,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     duosInitiated: Prisma.$DuoPartnershipPayload<ExtArgs>[]
     duosJoined: Prisma.$DuoPartnershipPayload<ExtArgs>[]
     sosAlertsSent: Prisma.$SOSAlertPayload<ExtArgs>[]
+    convoMemberships: Prisma.$ConversationMemberPayload<ExtArgs>[]
+    messagesSent: Prisma.$DirectMessagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1357,6 +1845,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     passwordHash: string
     passwordHint: string | null
     avatarColor: string
+    avatarImage: string | null
+    avatarEmoji: string | null
+    bio: string | null
     totalPoints: number
     streak: number
     lastEvalDate: string | null
@@ -1762,6 +2253,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   duosInitiated<T extends Prisma.User$duosInitiatedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$duosInitiatedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DuoPartnershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   duosJoined<T extends Prisma.User$duosJoinedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$duosJoinedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DuoPartnershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sosAlertsSent<T extends Prisma.User$sosAlertsSentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sosAlertsSentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SOSAlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  convoMemberships<T extends Prisma.User$convoMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$convoMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  messagesSent<T extends Prisma.User$messagesSentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messagesSentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DirectMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1797,6 +2290,9 @@ export interface UserFieldRefs {
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
   readonly passwordHint: Prisma.FieldRef<"User", 'String'>
   readonly avatarColor: Prisma.FieldRef<"User", 'String'>
+  readonly avatarImage: Prisma.FieldRef<"User", 'String'>
+  readonly avatarEmoji: Prisma.FieldRef<"User", 'String'>
+  readonly bio: Prisma.FieldRef<"User", 'String'>
   readonly totalPoints: Prisma.FieldRef<"User", 'Int'>
   readonly streak: Prisma.FieldRef<"User", 'Int'>
   readonly lastEvalDate: Prisma.FieldRef<"User", 'String'>
@@ -2324,6 +2820,54 @@ export type User$sosAlertsSentArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.SOSAlertScalarFieldEnum | Prisma.SOSAlertScalarFieldEnum[]
+}
+
+/**
+ * User.convoMemberships
+ */
+export type User$convoMembershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ConversationMember
+   */
+  select?: Prisma.ConversationMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ConversationMember
+   */
+  omit?: Prisma.ConversationMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ConversationMemberInclude<ExtArgs> | null
+  where?: Prisma.ConversationMemberWhereInput
+  orderBy?: Prisma.ConversationMemberOrderByWithRelationInput | Prisma.ConversationMemberOrderByWithRelationInput[]
+  cursor?: Prisma.ConversationMemberWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ConversationMemberScalarFieldEnum | Prisma.ConversationMemberScalarFieldEnum[]
+}
+
+/**
+ * User.messagesSent
+ */
+export type User$messagesSentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DirectMessage
+   */
+  select?: Prisma.DirectMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DirectMessage
+   */
+  omit?: Prisma.DirectMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DirectMessageInclude<ExtArgs> | null
+  where?: Prisma.DirectMessageWhereInput
+  orderBy?: Prisma.DirectMessageOrderByWithRelationInput | Prisma.DirectMessageOrderByWithRelationInput[]
+  cursor?: Prisma.DirectMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DirectMessageScalarFieldEnum | Prisma.DirectMessageScalarFieldEnum[]
 }
 
 /**

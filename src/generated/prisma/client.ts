@@ -78,3 +78,18 @@ export type SOSAlert = Prisma.SOSAlertModel
  * 
  */
 export type CallSession = Prisma.CallSessionModel
+/**
+ * Model Conversation
+ * 
+ */
+export type Conversation = Prisma.ConversationModel
+/**
+ * Model ConversationMember
+ * 
+ */
+export type ConversationMember = Prisma.ConversationMemberModel
+/**
+ * Model DirectMessage
+ * 
+ */
+export type DirectMessage = Prisma.DirectMessageModel

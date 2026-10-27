@@ -10,14 +10,41 @@ export interface RankInfo {
   tagline: string;
 }
 
+export interface RankBlock {
+  current: RankInfo;
+  next: RankInfo | null;
+  progressPercent: number;
+  xpToNext?: number;
+}
+
+export interface PublicUser {
+  id: string;
+  name: string;
+  username: string;
+  avatarColor: string;
+  avatarImage: string | null;
+  avatarEmoji: string | null;
+  bio: string | null;
+  totalPoints: number;
+  streak: number;
+  memberSince: string;
+  rank: RankBlock;
+  isMe?: boolean;
+  isCreator?: boolean;
+}
+
 export interface MeResponse {
   user: {
     id: string;
     name: string;
     username: string;
     avatarColor: string;
+    avatarImage: string | null;
+    avatarEmoji: string | null;
+    bio: string | null;
     totalPoints: number;
     streak: number;
+    memberSince?: string;
   };
   settings: { dailyTargetMin: number };
   today: {
@@ -78,4 +105,32 @@ export interface CallState {
   answeredAt: string | null;
 }
 
-export type ViewId = "dashboard" | "companions" | "duo";
+// ---------- Community (DMs & groups) ----------
+
+export interface ConversationListItem {
+  id: string;
+  kind: "dm" | "group";
+  name: string;
+  emoji: string | null;
+  updatedAt: string;
+  unreadCount: number;
+  memberCount: number;
+  lastMessage: { body: string; kind: string; createdAt: string; senderId: string; senderName: string } | null;
+  peer?: { id: string; name: string; avatarColor: string; avatarImage: string | null; avatarEmoji: string | null; bio: string | null; rank: RankBlock };
+  members?: PublicUser[];
+}
+
+export interface CommunityMessage {
+  id: string;
+  body: string;
+  kind: "text" | "system";
+  createdAt: string;
+  senderId: string;
+  senderName: string;
+  senderColor: string;
+  senderImage: string | null;
+  senderEmoji: string | null;
+  mine: boolean;
+}
+
+export type ViewId = "dashboard" | "companions" | "community" | "duo" | "ranks" | "profile";

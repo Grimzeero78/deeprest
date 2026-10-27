@@ -26,6 +26,9 @@ model User {
   passwordHash String   @map("password_hash")
   passwordHint String?  @map("password_hint") // optional hint shown after a failed sign-in
   avatarColor  String   @default("#8b5cf6") @map("avatar_color")
+  avatarImage  String?  @map("avatar_image") // WhatsApp-style profile photo (small data URL)
+  avatarEmoji  String?  @map("avatar_emoji") // optional emoji avatar (used when no photo)
+  bio          String?  // WhatsApp-style "About" status line
   totalPoints  Int      @default(0) @map("total_points") // XP driving the 10-level rank system
   streak       Int      @default(0) // consecutive days meeting the target
   lastEvalDate String?  @map("last_eval_date") // last date the cron evaluated this user (YYYY-MM-DD)
@@ -38,6 +41,8 @@ model User {
   duosInitiated DuoPartnership[] @relation("DuoInitiator")
   duosJoined    DuoPartnership[] @relation("DuoPartner")
   sosAlertsSent SOSAlert[]       @relation("SosSender")
+  convoMemberships ConversationMember[]
+  messagesSent  DirectMessage[]  @relation("DmSender")
 
   @@map("users")
 }
@@ -145,4 +150,53 @@ model CallSession {
   @@index([callerId])
   @@index([calleeId, status])
   @@map("call_sessions")
+}
+
+// ============================================================
+// Community — WhatsApp-style DMs & group chats
+// ============================================================
+
+// A conversation is a 1:1 DM (kind="dm") or a group (kind="group").
+model Conversation {
+  id        String   @id @default(cuid())
+  kind      String   @default("dm") // dm | group
+  name      String?  // group name (null for DMs)
+  emoji     String?  // group avatar emoji
+  createdBy String?  @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  members  ConversationMember[]
+  messages DirectMessage[]
+
+  @@index([updatedAt])
+  @@map("conversations")
+}
+
+model ConversationMember {
+  id             String      @id @default(cuid())
+  conversationId String      @map("conversation_id")
+  userId         String      @map("user_id")
+  lastReadAt     DateTime?   @map("last_read_at") // unread tracking
+  joinedAt       DateTime    @default(now()) @map("joined_at")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+  @@map("conversation_members")
+}
+
+model DirectMessage {
+  id             String      @id @default(cuid())
+  conversationId String      @map("conversation_id")
+  senderId       String      @map("sender_id")
+  body           String
+  kind           String      @default("text") // text | system
+  createdAt      DateTime    @default(now()) @map("created_at")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User        @relation("DmSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@map("direct_messages")
 }

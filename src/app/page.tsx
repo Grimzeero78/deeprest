@@ -8,13 +8,18 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import {
   LayoutDashboard, MessagesSquare, Users, MoonStar, LogOut, Siren, Phone, CheckCheck,
+  MessageCircle, Trophy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AuthScreen } from "@/components/deeprest/AuthScreen";
 import { Dashboard } from "@/components/deeprest/Dashboard";
 import { ChatView } from "@/components/deeprest/ChatView";
+import { CommunityView } from "@/components/deeprest/CommunityView";
+import { RanksView } from "@/components/deeprest/RanksView";
+import { ProfileView } from "@/components/deeprest/ProfileView";
 import { DuoView } from "@/components/deeprest/DuoView";
 import { CallOverlay } from "@/components/deeprest/CallOverlay";
+import { Avatar } from "@/components/deeprest/Avatar";
 import { RankIcon } from "@/components/deeprest/RankIcons";
 import type { MeResponse, DuoResponse, SosResponse, CallState, ViewId } from "@/components/deeprest/types";
 
@@ -28,6 +33,7 @@ export default function DeepRestPage() {
   const [sos, setSos] = useState<SosResponse | null>(null);
   const [call, setCall] = useState<CallState | null>(null);
   const [incomingSos, setIncomingSos] = useState<SosResponse["received"][number] | null>(null);
+  const [unreadTotal, setUnreadTotal] = useState(0);
 
   const prevXp = useRef<number | null>(null);
   const { toast } = useToast();
@@ -219,10 +225,12 @@ export default function DeepRestPage() {
     );
   }
 
-  const NAV: { id: ViewId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  const NAV: { id: ViewId; label: string; icon: React.ComponentType<{ className?: string }>; badge?: number }[] = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "companions", label: "Companions", icon: MessagesSquare },
-    { id: "duo", label: "Dynamic Duo", icon: Users },
+    { id: "community", label: "Chats", icon: MessageCircle, badge: unreadTotal },
+    { id: "duo", label: "Duo", icon: Users },
+    { id: "ranks", label: "Ranks", icon: Trophy },
   ];
 
   return (
@@ -264,7 +272,7 @@ export default function DeepRestPage() {
           <div className="ml-auto flex items-center gap-3">
             {/* mini rank badge */}
             <button
-              onClick={() => setView("dashboard")}
+              onClick={() => setView("ranks")}
               className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] py-1 pl-1 pr-3 transition hover:border-violet-400/30 sm:flex"
             >
               <RankIcon icon={me.rank.current.icon} color={me.rank.current.color} colorEnd={me.rank.current.colorEnd} size={30} />
@@ -272,6 +280,18 @@ export default function DeepRestPage() {
                 <span className="block font-semibold leading-tight text-white">{me.rank.current.name}</span>
                 <span className="block leading-tight text-slate-400">{me.user.totalPoints} XP</span>
               </span>
+            </button>
+            {/* profile avatar */}
+            <button
+              onClick={() => setView("profile")}
+              aria-label="Open your profile"
+              className={cn(
+                "flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] p-0.5 pr-2.5 transition hover:border-violet-400/40",
+                view === "profile" && "border-violet-400/50 bg-white/[0.08]"
+              )}
+            >
+              <Avatar name={me.user.name} color={me.user.avatarColor} image={me.user.avatarImage} emoji={me.user.avatarEmoji} size={30} />
+              <span className="hidden text-xs font-medium text-slate-200 sm:block">Profile</span>
             </button>
             <Button
               variant="ghost" size="icon" onClick={logout} aria-label="Sign out"
@@ -289,9 +309,12 @@ export default function DeepRestPage() {
           <Dashboard me={me} duo={duo} onRefresh={refreshAll} onGoDuo={() => setView("duo")} />
         )}
         {view === "companions" && <ChatView />}
+        {view === "community" && <CommunityView me={me} onUnreadTotal={setUnreadTotal} />}
         {view === "duo" && (
           <DuoView duo={duo} sos={sos} onRefresh={refreshAll} onCall={startCall} />
         )}
+        {view === "ranks" && <RanksView me={me} />}
+        {view === "profile" && <ProfileView me={me} onRefresh={refreshAll} />}
       </main>
 
       {/* Footer (sticks to bottom via flex column + mt-auto) */}
@@ -307,19 +330,24 @@ export default function DeepRestPage() {
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         aria-label="Primary mobile"
       >
-        <div className="grid grid-cols-3">
+        <div className="grid grid-cols-5">
           {NAV.map((n) => (
             <button
               key={n.id}
               onClick={() => setView(n.id)}
               aria-current={view === n.id ? "page" : undefined}
               className={cn(
-                "flex min-h-14 flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium transition",
+                "relative flex min-h-14 flex-col items-center justify-center gap-1 py-2 text-[11px] font-medium transition",
                 view === n.id ? "text-violet-300" : "text-slate-500 hover:text-slate-300"
               )}
             >
               <n.icon className="h-5 w-5" />
               {n.label}
+              {!!n.badge && n.badge > 0 && (
+                <span className="absolute right-[18%] top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[9px] font-bold text-white">
+                  {n.badge > 9 ? "9+" : n.badge}
+                </span>
+              )}
             </button>
           ))}
         </div>
