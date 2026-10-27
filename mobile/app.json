@@ -8,7 +8,6 @@
     "newArchEnabled": true,
     "android": {
       "package": "com.deeprest.app",
-      "label": "DeepRest",
       "permissions": [
         "android.permission.PACKAGE_USAGE_STATS",
         "android.permission.INTERNET"
@@ -18,7 +17,11 @@
       }
     },
     "extra": {
-      "apiBase": "https://deeprest-app.dev078.workers.dev"
-    }
+      "apiBase": "https://deeprest-app.dev078.workers.dev",
+      "eas": {
+        "projectId": "b6e9a8c9-dcf6-43ae-863d-0eb229740a2f"
+      }
+    },
+    "owner": "beeisaacs-team"
   }
 }
