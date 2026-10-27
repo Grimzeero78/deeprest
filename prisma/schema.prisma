@@ -12,10 +12,11 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(cuid())
-  email       String   @unique
+  id           String   @id @default(cuid())
+  username     String   @unique // lowercased display name — used for login (no email)
+  name         String   // display name exactly as entered
   passwordHash String
-  name        String
+  passwordHint String?  // optional hint shown after a failed sign-in attempt
   avatarColor String   @default("#8b5cf6")
   totalPoints Int      @default(0) // XP driving the 10-level rank system
   streak      Int      @default(0) // consecutive days meeting the target

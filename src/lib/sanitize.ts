@@ -30,7 +30,12 @@ export function sanitizeMessage(raw: unknown, maxLen = 2000): string {
     .trim();
 }
 
-/** Basic email sanity check (full validation happens via zod in routes). */
-export function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase().slice(0, 254);
+/** Normalize a display name: collapse whitespace, strip stray chars, cap length. */
+export function normalizeName(raw: string, maxLen = 40): string {
+  return raw.replace(/\s+/g, " ").trim().slice(0, maxLen);
+}
+
+/** Login identifier — lowercase form of the name, unique per account. */
+export function toUsername(name: string): string {
+  return name.trim().toLowerCase().slice(0, 40);
 }

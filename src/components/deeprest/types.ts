@@ -14,7 +14,7 @@ export interface MeResponse {
   user: {
     id: string;
     name: string;
-    email: string;
+    username: string;
     avatarColor: string;
     totalPoints: number;
     streak: number;

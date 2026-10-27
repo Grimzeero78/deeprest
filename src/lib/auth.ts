@@ -16,7 +16,7 @@ const SESSION_TTL = "7d";
 
 export interface SessionPayload {
   userId: string;
-  email: string;
+  username: string;
   name: string;
 }
 
@@ -32,10 +32,10 @@ export async function createSessionToken(payload: SessionPayload): Promise<strin
 export async function verifySessionToken(token: string): Promise<SessionPayload | null> {
   try {
     const { payload } = await jwtVerify(token, SECRET, { issuer: "deeprest" });
-    if (!payload.userId || !payload.email) return null;
+    if (!payload.userId || !payload.username) return null;
     return {
       userId: payload.userId as string,
-      email: payload.email as string,
+      username: payload.username as string,
       name: (payload.name as string) || "Friend",
     };
   } catch {

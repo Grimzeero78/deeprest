@@ -10,12 +10,13 @@
 
 PRAGMA foreign_keys = ON;
 
--- ---------- Users & auth ----------
+-- ---------- Users & auth (no email — name + password + hint only) ----------
 CREATE TABLE IF NOT EXISTS users (
   id            TEXT PRIMARY KEY,                       -- nanoid/uuid generated in Worker
-  email         TEXT NOT NULL UNIQUE,
+  username      TEXT NOT NULL UNIQUE,                   -- lowercased name, login identifier
+  name          TEXT NOT NULL,                          -- display name exactly as entered
   password_hash TEXT NOT NULL,                          -- scrypt (or PBKDF2) "salt:hash"
-  name          TEXT NOT NULL,
+  password_hint TEXT,                                   -- optional hint returned on failed sign-in
   avatar_color  TEXT NOT NULL DEFAULT '#8b5cf6',
   total_points  INTEGER NOT NULL DEFAULT 0,             -- XP driving the 10-rank ladder
   streak        INTEGER NOT NULL DEFAULT 0,             -- consecutive days meeting target

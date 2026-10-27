@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, MoonStar, ShieldCheck } from "lucide-react";
+import { Lightbulb, Loader2, MoonStar, ShieldCheck } from "lucide-react";
 import { RankIcon } from "./RankIcons";
 
 interface AuthScreenProps {
@@ -15,24 +15,39 @@ interface AuthScreenProps {
 export function AuthScreen({ onAuthed }: AuthScreenProps) {
   const [mode, setMode] = useState<"login" | "register">("register");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [hint, setHint] = useState("");
+  const [loginHint, setLoginHint] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+    setLoginHint(null);
+
+    if (mode === "register" && password !== confirmPassword) {
+      setError("Passwords do not match. Please check both fields.");
+      return;
+    }
+
+    setLoading(true);
     try {
+      const payload =
+        mode === "register"
+          ? { name, password, confirmPassword, hint }
+          : { name, password };
       const res = await fetch(`/api/auth/${mode}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(mode === "register" ? { name, email, password } : { email, password }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Something went wrong.");
+        // Failed sign-in: surface the stored hint (if the user saved one).
+        if (mode === "login" && data.hint) setLoginHint(data.hint);
         return;
       }
       onAuthed();
@@ -84,7 +99,7 @@ export function AuthScreen({ onAuthed }: AuthScreenProps) {
           </div>
           <div className="mt-8 flex items-center gap-2 text-xs text-slate-500">
             <ShieldCheck className="h-4 w-4 text-emerald-400" />
-            JWT-secured · Chats encrypted at rest (AES-256-GCM) · Rate-limited endpoints
+            No email needed · JWT-secured · Chats encrypted at rest (AES-256-GCM)
           </div>
         </div>
 
@@ -100,26 +115,19 @@ export function AuthScreen({ onAuthed }: AuthScreenProps) {
             </h2>
             <p className="mt-1 text-sm text-slate-400">
               {mode === "login"
-                ? "Sign in to continue your streak."
-                : "Create your account — your rank journey starts at Restless."}
+                ? "Sign in with your name and password — no email needed."
+                : "Just a name and password — your rank journey starts at Restless."}
             </p>
 
             <form onSubmit={submit} className="mt-6 space-y-4">
-              {mode === "register" && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="name" className="text-slate-300">Your name</Label>
-                  <Input
-                    id="name" value={name} onChange={(e) => setName(e.target.value)}
-                    placeholder="Alex" required maxLength={40}
-                    className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500 focus-visible:ring-violet-400"
-                  />
-                </div>
-              )}
               <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-slate-300">Email</Label>
+                <Label htmlFor="name" className="text-slate-300">
+                  {mode === "login" ? "Your name" : "Choose a name"}
+                </Label>
                 <Input
-                  id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com" required autoComplete="email"
+                  id="name" value={name} onChange={(e) => setName(e.target.value)}
+                  placeholder="Alex" required minLength={2} maxLength={40}
+                  autoComplete="username"
                   className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500 focus-visible:ring-violet-400"
                 />
               </div>
@@ -133,10 +141,51 @@ export function AuthScreen({ onAuthed }: AuthScreenProps) {
                 />
               </div>
 
+              {mode === "register" && (
+                <>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="confirmPassword" className="text-slate-300">Confirm password</Label>
+                    <Input
+                      id="confirmPassword" type="password" value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Type the same password again"
+                      required minLength={8} autoComplete="new-password"
+                      className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500 focus-visible:ring-violet-400"
+                    />
+                    {confirmPassword.length > 0 && confirmPassword !== password && (
+                      <p className="text-xs text-amber-300">Passwords don&apos;t match yet.</p>
+                    )}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="hint" className="text-slate-300">
+                      Password hint <span className="text-slate-500">(optional)</span>
+                    </Label>
+                    <Input
+                      id="hint" value={hint} onChange={(e) => setHint(e.target.value)}
+                      placeholder="e.g. my usual phrase + the year"
+                      maxLength={120}
+                      className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500 focus-visible:ring-violet-400"
+                    />
+                    <p className="text-xs text-slate-500">
+                      Shown to you only if a sign-in attempt fails. Never store the password itself here.
+                    </p>
+                  </div>
+                </>
+              )}
+
               {error && (
                 <p className="rounded-lg border border-red-400/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
                   {error}
                 </p>
+              )}
+
+              {loginHint && (
+                <div className="flex items-start gap-2 rounded-lg border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
+                  <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+                  <span>
+                    Your hint: <span className="font-medium">{loginHint}</span>
+                  </span>
+                </div>
               )}
 
               <Button
@@ -152,7 +201,11 @@ export function AuthScreen({ onAuthed }: AuthScreenProps) {
               {mode === "login" ? "New to DeepRest?" : "Already have an account?"}{" "}
               <button
                 type="button"
-                onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(null); }}
+                onClick={() => {
+                  setMode(mode === "login" ? "register" : "login");
+                  setError(null);
+                  setLoginHint(null);
+                }}
                 className="font-medium text-violet-300 underline-offset-4 hover:underline"
               >
                 {mode === "login" ? "Create an account" : "Sign in"}

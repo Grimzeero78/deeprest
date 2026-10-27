@@ -42,7 +42,7 @@ export async function GET() {
       user: {
         id: user.id,
         name: user.name,
-        email: user.email,
+        username: user.username,
         avatarColor: user.avatarColor,
         totalPoints: user.totalPoints,
         streak: user.streak,
