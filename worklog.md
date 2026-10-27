@@ -211,3 +211,4 @@ Work Log:
 Stage Summary:
 - No new failure: fixed build 51127f27 just waiting in EAS free-tier queue; watcher cron 478181 now armed to announce it
 - App WhatsApp-chat verified working in production
+EAS build watcher: status=IN_QUEUE (check @ 2026-10-27T17:40Z)
