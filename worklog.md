@@ -179,3 +179,20 @@ Work Log:
 
 Stage Summary:
 - Verification tag built, verified in bundle, pushed (dc2a4af). Deploy pending CF credentials.
+
+---
+Task ID: 10
+Agent: main (Z.ai)
+Task: Deploy Google verification tag to production with user's Global API Key
+
+Work Log:
+- User re-shared Global API Key (cfk_..., email injuguna308@gmail.com); verified via GET /user -> success
+- First attempt with a cfat_ token failed both auth paths (invalid) -> user supplied correct cfk_ key
+- bun run deploy:cf OK -> Worker version 5a8b3a21 (D1 deeprest-db + AI llama-3.3-70b + ASSETS bindings intact)
+- LIVE verification: homepage serves exact tag <meta name="google-site-verification" content="oeDfPU047d5Lk5H24rfTv4vU2PEvHqSo0VTYtD4FUUU"/>; HTTP 200
+- Auth round-trip on prod: register OK (D1 write), login 200 (login field is "name" not "username"); test account (username "hc") deleted from remote D1 incl. screen_time_logs/user_settings (chat tables cascade); only isaac + pinky remain
+- Note: chat_messages has no user_id column (cascades via session_id) — first cleanup attempt errored, corrected
+
+Stage Summary:
+- Google Search Console verification tag is LIVE on https://deeprest-app.dev078.workers.dev (Worker version 5a8b3a21)
+- User next step: click "Verify" in Google Search Console
