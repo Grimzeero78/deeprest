@@ -11,7 +11,7 @@ import android.provider.Settings
 import android.app.AppOpsManager.OPSTR_GET_USAGE_STATS
 import android.app.AppOpsManager.MODE_ALLOWED
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.ModuleDefinition
+import expo.modules.kotlin.modules.ModuleDefinition
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
