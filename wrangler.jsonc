@@ -21,7 +21,7 @@
     {
       "binding": "DB",
       "database_name": "deeprest-db",
-      "database_id": "28688ccf-5cac-4037-a2b6-ec2e856ebf8a"
+      "database_id": "e4caa5a2-74a7-441d-b6f5-fb95e32ca24e"
     }
   ],
   // ---------- Workers AI for the 3 companions (bound as env.AI) ----------

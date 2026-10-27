@@ -39,7 +39,7 @@ for Next.js on Workers.
    - **Build command**: `npx prisma generate && npx opennextjs-cloudflare build`
    - **Deploy command**: `npx wrangler deploy`
 3. Bindings come from the committed `wrangler.jsonc` automatically:
-   - D1 `DB` → database `28688ccf-5cac-4037-a2b6-ec2e856ebf8a`
+   - D1 `DB` → database `e4caa5a2-74a7-441d-b6f5-fb95e32ca24e`
      (if you recreated the database, paste YOUR id in `wrangler.jsonc`)
    - Workers AI `AI` (real Llama 3.3 70B — the companions work with no extra keys)
 4. Add secrets (dashboard → your Worker → Settings → Variables and Secrets, or CLI):
