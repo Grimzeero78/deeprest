@@ -9,6 +9,7 @@
     "build:apk": "eas build -p android --profile preview"
   },
   "dependencies": {
+    "babel-preset-expo": "~54.0.10",
     "expo": "~54.0.0",
     "expo-background-fetch": "~14.0.0",
     "expo-dev-client": "~6.0.0",
