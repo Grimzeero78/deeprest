@@ -33,7 +33,19 @@ export async function GET(req: NextRequest) {
       include: { screenLogs: { where: { date: today } }, settings: true },
     });
 
-    const results = [];
+    const results: {
+      userId: string;
+      minutesUsed: number;
+      targetMin: number;
+      rankChanged: boolean;
+      rankBefore: string;
+      rankAfter: string;
+      pointsDelta: number;
+      newXp: number;
+      newStreak: number;
+      metTarget: boolean;
+      reason: string;
+    }[] = [];
 
     for (const user of users) {
       const log = user.screenLogs[0];

@@ -1,0 +1,44 @@
+// ============================================================
+// DeepRest — Cloudflare Worker app (OpenNext)
+// Deploys the Next.js 16 app to Workers with your D1 database.
+// Deploy:  bunx opennextjs-cloudflare deploy
+// ============================================================
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "deeprest-app",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-03-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  // ---------- Your D1 database (bound as env.DB) ----------
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "deeprest-db",
+      "database_id": "e4caa5a2-74a7-441d-b6f5-fb95e32ca24e"
+    }
+  ],
+  // ---------- Workers AI for the 3 companions (bound as env.AI) ----------
+  "ai": {
+    "binding": "AI"
+  },
+  "vars": {
+    "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+  }
+  // ---------- Optional: KV for shared rate-limit counters ----------
+  // Create first:  bunx wrangler kv namespace create RATE_LIMIT
+  // then paste the id below and uncomment:
+  // "kv_namespaces": [
+  //   { "binding": "RATE_LIMIT", "id": "<paste-kv-id>" }
+  // ]
+  // Secrets (do NOT put values here):
+  //   bunx wrangler secret put JWT_SECRET
+  //   bunx wrangler secret put ENCRYPTION_KEY
+  //   (optional) OPENAI_API_KEY if you prefer OpenAI over Workers AI
+}

@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       data: {
         username,
         name,
-        passwordHash: hashPassword(password),
+        passwordHash: await hashPassword(password),
         passwordHint: hint || null,
         settings: { create: {} },
       },

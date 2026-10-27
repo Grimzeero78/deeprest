@@ -54,3 +54,9 @@ server.log
 /skills/
 # local database (demo data, password hashes)
 db/
+
+# cloudflare build artifacts
+.open-next/
+.wrangler/
+wrangler.local.jsonc
+src/generated/prisma/libquery_engine-*.node

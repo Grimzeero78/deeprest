@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     const username = toUsername(name);
     const user = await db.user.findUnique({ where: { username } });
-    if (!user || !verifyPassword(password, user.passwordHash)) {
+    if (!user || !(await verifyPassword(password, user.passwordHash))) {
       // Attach the hint only when the account exists — never leak whether
       // the name itself is registered to unauthenticated probing beyond this.
       return NextResponse.json(

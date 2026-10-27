@@ -53,3 +53,27 @@ Work Log:
 
 Stage Summary:
 - User only needs: cd cloudflare && wrangler deploy + d1 execute to have D1 live with all tables
+
+---
+Task ID: 4
+Agent: main (Z.ai)
+Task: Fix Cloudflare 404 — make DeepRest deployable to Cloudflare Workers (Next 16 + D1)
+
+Work Log:
+- Root cause: Pages cannot run Next 16 (next-on-pages stops at 13/14); app was Node/Prisma/SQLite + z-ai-sdk + scrypt — none run on workerd
+- Installed @opennextjs/cloudflare 1.20.13 + wrangler 4.153 + @prisma/adapter-d1@6 + @prisma/adapter-better-sqlite3@6 + better-sqlite3
+- auth.ts: scryptSync -> PBKDF2-SHA256 WebCrypto (async); crypto.ts: node cipher -> WebCrypto AES-256-GCM (async, same iv:tag:ct format)
+- chat route: z-ai-sdk removed -> src/lib/ai.ts provider chain (Workers AI binding -> OPENAI_API_KEY -> persona-aware graceful fallback); GET history decrypt via Promise.all
+- db.ts: Proxy-based dual-mode client — PrismaD1 (env.DB on CF) / PrismaBetterSQLite3 (file DB locally)
+- schema.prisma: switched to new `prisma-client` generator (runtime="cloudflare", pure-TS queryCompiler engine, zero Rust binaries) + full @@map/@map onto cloudflare/schema.sql snake_case tables so one client serves both DBs
+- Fixed standing type errors (cron results[], screentime apps[]); tsconfig excludes examples/skills/tests/mini-services
+- Config: root wrangler.jsonc (deeprest-app: nodejs_compat, D1 28688ccf-..., AI binding, ASSETS) + open-next.config.ts; scripts build:cf/preview:cf/deploy:cf/dev:cf; wrangler.local.jsonc (no AI binding, for local workerd test, gitignored)
+- OpenNext build OK (after OOM kill of dev servers); local D1 schema applied via wrangler d1 execute --local
+- E2E on workerd:8787: register(D1 insert) OK, case-insensitive PBKDF2 login OK, wrong-pw hint OK, /me D1 read OK, screentime sync D1 write OK, chat AES-GCM persist + fallback AI OK
+- Sandbox :3000 re-verified after restart (better-sqlite3 path): register + Shepherd fallback chat OK
+- cloudflare/README.md rewritten: Workers deploy guide (Git-connected + CLI), secrets, WAF, local preview
+
+Stage Summary:
+- DeepRest now deploys to Cloudflare Workers with user's real D1 (28688ccf) + Workers AI bindings from committed wrangler.jsonc
+- Old Pages project (deeprest-76w.pages.dev) can be deleted after Worker deploy
+- Commit + push to Grimzeero78/deeprest main

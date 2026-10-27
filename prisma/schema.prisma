@@ -1,9 +1,17 @@
 // DeepRest — Gamified Rehabilitation & Support Platform
-// Prisma schema (SQLite for the runnable demo).
-// The production Cloudflare D1 equivalent lives in /cloudflare/schema.sql
+// Prisma schema — mapped 1:1 onto the Cloudflare D1 tables in
+// /cloudflare/schema.sql (snake_case). The SAME client runs on:
+//   • Cloudflare Workers → @prisma/adapter-d1  (env.DB binding)
+//   • Local dev          → @prisma/adapter-better-sqlite3 (file DB)
+// `prisma db push` recreates the local file DB with identical
+// table/column names, so local and production stay in lockstep.
 
+// The new `prisma-client` generator emits a pure-TypeScript client
+// (queryCompiler engine, zero Rust binaries) — required for Workers.
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  runtime  = "cloudflare"
 }
 
 datasource db {
@@ -15,116 +23,126 @@ model User {
   id           String   @id @default(cuid())
   username     String   @unique // lowercased display name — used for login (no email)
   name         String   // display name exactly as entered
-  passwordHash String
-  passwordHint String?  // optional hint shown after a failed sign-in attempt
-  avatarColor String   @default("#8b5cf6")
-  totalPoints Int      @default(0) // XP driving the 10-level rank system
-  streak      Int      @default(0) // consecutive days meeting the target
-  lastEvalDate String? // last date the cron evaluated this user (YYYY-MM-DD)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  passwordHash String   @map("password_hash")
+  passwordHint String?  @map("password_hint") // optional hint shown after a failed sign-in
+  avatarColor  String   @default("#8b5cf6") @map("avatar_color")
+  totalPoints  Int      @default(0) @map("total_points") // XP driving the 10-level rank system
+  streak       Int      @default(0) // consecutive days meeting the target
+  lastEvalDate String?  @map("last_eval_date") // last date the cron evaluated this user (YYYY-MM-DD)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-  settings    UserSettings?
-  screenLogs  ScreenTimeLog[]
+  settings     UserSettings?
+  screenLogs   ScreenTimeLog[]
   chatSessions ChatSession[]
   duosInitiated DuoPartnership[] @relation("DuoInitiator")
   duosJoined    DuoPartnership[] @relation("DuoPartner")
   sosAlertsSent SOSAlert[]       @relation("SosSender")
+
+  @@map("users")
 }
 
 model UserSettings {
   id             String  @id @default(cuid())
-  userId         String  @unique
-  dailyTargetMin Int     @default(360) // "6-Hour Target" in minutes
+  userId         String  @unique @map("user_id")
+  dailyTargetMin Int     @default(360) @map("daily_target_min") // "6-Hour Target" in minutes
   timezone       String  @default("UTC")
   notifications  Boolean @default(true)
   user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_settings")
 }
 
 // One row per user per day — written by the monitoring service (Cron Trigger in prod)
 model ScreenTimeLog {
   id           String  @id @default(cuid())
-  userId       String
+  userId       String  @map("user_id")
   date         String // YYYY-MM-DD
-  minutesUsed  Int     @default(0)
-  targetMin    Int     @default(360)
-  pointsEarned Int     @default(0)
-  metTarget    Boolean @default(false)
+  minutesUsed  Int     @default(0) @map("minutes_used")
+  targetMin    Int     @default(360) @map("target_min")
+  pointsEarned Int     @default(0) @map("points_earned")
+  metTarget    Boolean @default(false) @map("met_target")
   evaluated    Boolean @default(false) // cron has scored this day
-  topApps      String  @default("[]") // JSON: [{name, minutes, category}]
+  topApps      String  @default("[]") @map("top_apps") // JSON: [{name, minutes, category}]
   user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
   @@index([userId, date])
+  @@map("screen_time_logs")
 }
 
 // AI companion conversations — persona: SHEPHERD | GUIDE | COUNSELOR
 model ChatSession {
   id        String   @id @default(cuid())
-  userId    String
+  userId    String   @map("user_id")
   persona   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
   messages  ChatMessage[]
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, persona])
   @@index([userId, persona])
+  @@map("chat_sessions")
 }
 
 // Chat logs are AES-256-GCM encrypted at rest (lib/crypto.ts)
 model ChatMessage {
   id        String      @id @default(cuid())
-  sessionId String
+  sessionId String      @map("session_id")
   role      String // user | assistant
   content   String // encrypted ciphertext (base64:iv:tag)
-  createdAt DateTime    @default(now())
+  createdAt DateTime    @default(now()) @map("created_at")
   session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([sessionId, createdAt])
+  @@map("chat_messages")
 }
 
 // The Dynamic Duo accountability partnership
 model DuoPartnership {
-  id         String   @id @default(cuid())
-  initiatorId String
-  partnerId  String?
-  inviteCode String   @unique
-  status     String   @default("PENDING") // PENDING | ACTIVE
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(cuid())
+  initiatorId String   @map("initiator_id")
+  partnerId   String?  @map("partner_id")
+  inviteCode  String   @unique @map("invite_code")
+  status      String   @default("PENDING") // PENDING | ACTIVE
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   initiator User  @relation("DuoInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
   partner   User? @relation("DuoPartner", fields: [partnerId], references: [id], onDelete: Cascade)
 
   @@index([initiatorId])
   @@index([partnerId])
+  @@map("duo_partnerships")
 }
 
 // SOS panic alerts — delivered to the Dynamic Duo partner (SMS/Email/Push in prod)
 model SOSAlert {
   id        String   @id @default(cuid())
-  senderId  String
+  senderId  String   @map("sender_id")
   message   String
   channel   String   @default("push") // push | sms | email (simulated)
   status    String   @default("SENT") // SENT | ACKNOWLEDGED
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @map("created_at")
   sender    User     @relation("SosSender", fields: [senderId], references: [id], onDelete: Cascade)
 
   @@index([senderId, createdAt])
+  @@map("sos_alerts")
 }
 
 // Simulated WebRTC / Cloudflare Calls signaling state machine
 model CallSession {
   id         String    @id @default(cuid())
-  callerId   String
-  calleeId   String
+  callerId   String    @map("caller_id")
+  calleeId   String    @map("callee_id")
   modality   String    @default("voice") // voice | video
   status     String    @default("RINGING") // RINGING | ACTIVE | ENDED | DECLINED | MISSED
-  startedAt  DateTime  @default(now())
-  answeredAt DateTime?
-  endedAt    DateTime?
+  startedAt  DateTime  @default(now()) @map("started_at")
+  answeredAt DateTime? @map("answered_at")
+  endedAt    DateTime? @map("ended_at")
 
   @@index([callerId])
   @@index([calleeId, status])
+  @@map("call_sessions")
 }

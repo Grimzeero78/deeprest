@@ -5,7 +5,7 @@ import { PERSONAS, isPersonaId, type PersonaId } from "@/lib/personas";
 import { encryptAtRest, decryptAtRest } from "@/lib/crypto";
 import { sanitizeMessage } from "@/lib/sanitize";
 import { LIMITS } from "@/lib/rate-limit";
-import ZAI from "z-ai-web-dev-sdk";
+import { completeChat } from "@/lib/ai";
 
 const MAX_HISTORY = 16; // messages of context sent to the model
 
@@ -24,12 +24,14 @@ export async function GET(req: NextRequest) {
       include: { messages: { orderBy: { createdAt: "asc" } } },
     });
 
-    const messages = (chatSession?.messages || [])
-      .map((m) => {
-        const content = decryptAtRest(m.content);
-        return content ? { id: m.id, role: m.role, content, createdAt: m.createdAt } : null;
-      })
-      .filter(Boolean);
+    const messages = (
+      await Promise.all(
+        (chatSession?.messages || []).map(async (m) => {
+          const content = await decryptAtRest(m.content);
+          return content ? { id: m.id, role: m.role, content, createdAt: m.createdAt } : null;
+        })
+      )
+    ).filter(Boolean);
 
     return NextResponse.json({ persona, messages, greeting: PERSONAS[persona].greeting });
   } catch (err) {
@@ -67,40 +69,28 @@ export async function POST(req: NextRequest) {
 
     // Persist the user's message (encrypted at rest)
     await db.chatMessage.create({
-      data: { sessionId: chatSession.id, role: "user", content: encryptAtRest(message) },
+      data: { sessionId: chatSession.id, role: "user", content: await encryptAtRest(message) },
     });
 
-    // Build model context from recent history (already decrypted at write time is NOT stored;
-    // we decrypt stored messages to reconstruct context)
-    const history = (chatSession.messages || [])
-      .map((m) => {
-        const content = decryptAtRest(m.content);
-        return content ? { role: m.role, content } : null;
-      })
-      .filter(Boolean)
-      .slice(-MAX_HISTORY) as { role: string; content: string }[];
+    // Reconstruct context from stored ciphertext (decrypt each entry)
+    const history: { role: string; content: string }[] = [];
+    for (const m of chatSession.messages || []) {
+      const content = await decryptAtRest(m.content);
+      if (content) history.push({ role: m.role, content });
+    }
+    const context = history.slice(-MAX_HISTORY);
 
     const personaDef = PERSONAS[persona];
-    const completion = await ZAI.create().then((zai) =>
-      zai.chat.completions.create({
-        messages: [
-          {
-            role: "assistant",
-            content: `${personaDef.systemPrompt}\n\nYou are talking with ${session.name}.`,
-          },
-          ...history,
-          { role: "user", content: message },
-        ],
-        thinking: { type: "disabled" },
-      })
+    const reply = await completeChat(
+      personaDef.systemPrompt,
+      [...context, { role: "user", content: message }],
+      persona,
+      session.name
     );
-
-    const reply = completion.choices[0]?.message?.content?.trim();
-    if (!reply) throw new Error("Empty AI response");
 
     // Persist AI reply (encrypted at rest)
     const saved = await db.chatMessage.create({
-      data: { sessionId: chatSession.id, role: "assistant", content: encryptAtRest(reply) },
+      data: { sessionId: chatSession.id, role: "assistant", content: await encryptAtRest(reply) },
     });
 
     return NextResponse.json({

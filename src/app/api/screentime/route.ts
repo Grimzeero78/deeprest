@@ -29,7 +29,7 @@ function pickWeighted() {
 
 /** Generate a believable "day of usage" ending near `minutesUsed`. */
 function buildTopApps(minutesUsed: number) {
-  const apps = [];
+  const apps: { name: string; minutes: number }[] = [];
   let remaining = Math.max(20, minutesUsed);
   const count = 3 + Math.floor(Math.random() * 3); // 3-5 apps
   const used = new Set<string>();
