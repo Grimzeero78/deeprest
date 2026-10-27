@@ -3,49 +3,37 @@ import { db } from "@/lib/db";
 import { requireSession, unauthorized, badRequest, serverError, todayKey } from "@/lib/api-helpers";
 import { sanitizeMessage } from "@/lib/sanitize";
 
-// Simulated app catalog — in production this arrives from the device agent / Screen Time API sync.
-const APP_POOL = [
-  { name: "TikTok",     weight: 3, min: 40, max: 180 },
-  { name: "YouTube",    weight: 3, min: 30, max: 150 },
-  { name: "Instagram",  weight: 2, min: 20, max: 120 },
-  { name: "X (Twitter)",weight: 2, min: 15, max: 90 },
-  { name: "WhatsApp",   weight: 2, min: 10, max: 60 },
-  { name: "Chrome",     weight: 2, min: 15, max: 80 },
-  { name: "Netflix",    weight: 1, min: 30, max: 120 },
-  { name: "Spotify",    weight: 1, min: 10, max: 60 },
-  { name: "Games",      weight: 1, min: 15, max: 90 },
-  { name: "Messages",   weight: 1, min: 5,  max: 30 },
-];
-
-function pickWeighted() {
-  const total = APP_POOL.reduce((s, a) => s + a.weight, 0);
-  let r = Math.random() * total;
-  for (const app of APP_POOL) {
-    r -= app.weight;
-    if (r <= 0) return app;
-  }
-  return APP_POOL[0];
+interface TopAppEntry {
+  name: string;
+  minutes: number;
 }
 
-/** Generate a believable "day of usage" ending near `minutesUsed`. */
-function buildTopApps(minutesUsed: number) {
-  const apps: { name: string; minutes: number }[] = [];
-  let remaining = Math.max(20, minutesUsed);
-  const count = 3 + Math.floor(Math.random() * 3); // 3-5 apps
-  const used = new Set<string>();
-  for (let i = 0; i < count && remaining > 5; i++) {
-    const app = pickWeighted();
-    if (used.has(app.name)) continue;
-    used.add(app.name);
-    const share = i === 0 ? 0.3 + Math.random() * 0.25 : 0.1 + Math.random() * 0.2;
-    const mins = Math.max(5, Math.min(Math.round(remaining * share), app.max));
-    apps.push({ name: app.name, minutes: mins });
-    remaining -= mins;
+/** Validate + sanitize user-entered top apps (max 5, deduped). */
+function sanitizeTopApps(raw: unknown): TopAppEntry[] {
+  if (!Array.isArray(raw)) return [];
+  const seen = new Set<string>();
+  const out: TopAppEntry[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const name = sanitizeMessage((item as { name?: unknown }).name, 30);
+    const minutes = Math.round(Number((item as { minutes?: unknown }).minutes));
+    if (!name || !Number.isFinite(minutes) || minutes < 1 || minutes > 24 * 60) continue;
+    const key = name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ name, minutes });
+    if (out.length >= 5) break;
   }
-  if (remaining > 5) {
-    apps.push({ name: "Other", minutes: Math.round(remaining) });
+  return out;
+}
+
+function parseTopApps(json: string | null | undefined): TopAppEntry[] {
+  try {
+    const parsed = JSON.parse(json || "[]");
+    return Array.isArray(parsed) ? (parsed as TopAppEntry[]) : [];
+  } catch {
+    return [];
   }
-  return apps.sort((a, b) => b.minutes - a.minutes);
 }
 
 export async function POST(req: NextRequest) {
@@ -89,38 +77,42 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, targetMin: Math.round(minutes) });
     }
 
+    if (action === "set") {
+      // Honest logging: the user types the total their phone's
+      // Digital Wellbeing / Screen Time screen actually shows.
+      const minutes = Math.round(Number(body?.minutes));
+      if (!Number.isFinite(minutes) || minutes < 0 || minutes > 24 * 60) {
+        return badRequest("Minutes must be between 0 and 1440.");
+      }
+      const appsProvided = body?.topApps !== undefined;
+      const topApps = sanitizeTopApps(body?.topApps);
+      const updated = await db.screenTimeLog.update({
+        where: { id: log.id },
+        data: {
+          minutesUsed: minutes,
+          ...(appsProvided ? { topApps: JSON.stringify(topApps) } : {}),
+        },
+      });
+      return NextResponse.json({
+        ok: true,
+        minutesUsed: updated.minutesUsed,
+        topApps: parseTopApps(updated.topApps),
+      });
+    }
+
     if (action === "log") {
-      // Manual log / device-sync delta (simulated device agent in this demo)
+      // Quick +/- adjustments (e.g. +30m, or -20m spent offline).
       const delta = Number(body?.minutes);
       if (!Number.isFinite(delta) || delta === 0) return badRequest("Invalid minutes value.");
       const minutesUsed = Math.max(0, Math.min(24 * 60, log.minutesUsed + Math.round(delta)));
       const updated = await db.screenTimeLog.update({
         where: { id: log.id },
-        data: { minutesUsed, topApps: JSON.stringify(buildTopApps(minutesUsed)) },
+        data: { minutesUsed },
       });
       return NextResponse.json({
         ok: true,
         minutesUsed: updated.minutesUsed,
-        topApps: JSON.parse(updated.topApps),
-      });
-    }
-
-    if (action === "sync") {
-      // Simulate the day's device usage so the demo has realistic data
-      const targetMin = log.targetMin;
-      // 55% chance of a "good day" (under target), else over — near the boundary for drama
-      const over = Math.random() > 0.55;
-      const minutesUsed = over
-        ? targetMin + 10 + Math.floor(Math.random() * 110)
-        : Math.max(15, targetMin - Math.floor(20 + Math.random() * 180));
-      const updated = await db.screenTimeLog.update({
-        where: { id: log.id },
-        data: { minutesUsed, topApps: JSON.stringify(buildTopApps(minutesUsed)) },
-      });
-      return NextResponse.json({
-        ok: true,
-        minutesUsed: updated.minutesUsed,
-        topApps: JSON.parse(updated.topApps),
+        topApps: parseTopApps(updated.topApps),
       });
     }
 

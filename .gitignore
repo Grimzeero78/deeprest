@@ -60,3 +60,4 @@ db/
 .wrangler/
 wrangler.local.jsonc
 src/generated/prisma/libquery_engine-*.node
+download/

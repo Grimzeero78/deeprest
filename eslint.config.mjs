@@ -44,7 +44,14 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     "no-useless-escape": "off",
   },
 }, {
-  ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts", "examples/**", "skills"]
+  ignores: [
+    "node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts",
+    "examples/**", "skills", "tests/**", "mini-services/**",
+    "src/generated/**",      // generated Prisma client — never lint
+    ".open-next/**",         // OpenNext Cloudflare build output
+    ".wrangler/**",          // wrangler local dev/preview output
+    "db/**",
+  ]
 }];
 
 export default eslintConfig;

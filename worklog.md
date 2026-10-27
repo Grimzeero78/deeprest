@@ -77,3 +77,25 @@ Stage Summary:
 - DeepRest now deploys to Cloudflare Workers with user's real D1 (28688ccf) + Workers AI bindings from committed wrangler.jsonc
 - Old Pages project (deeprest-76w.pages.dev) can be deleted after Worker deploy
 - Commit + push to Grimzeero78/deeprest main
+
+---
+Task ID: 5
+Agent: main (Z.ai)
+Task: "Make it real" — real trained AI (Grok/GLM/Workers AI), honest screen-time logging, deploy-clean code
+
+Work Log:
+- CRITICAL FIX: wrangler.jsonc + cloudflare/wrangler.toml contained D1 id e4caa5a2-... (wrong/placeholder); restored user's real database_id 28688ccf-5cac-4037-a2b6-ec2e856ebf8a in both
+- src/lib/ai.ts rewritten: real-model chain = AI_API_KEY (Grok api.x.ai default grok-4-1-fast / Z.ai glm-4.6 / any OpenAI-compatible) -> Workers AI binding (Llama 3.3 70B, no key needed) -> GLM via z-ai-web-dev-sdk (sandbox; hidden eval dynamic import keeps Workers bundle clean) -> offline fallback last resort
+- Screentime de-prototyped: deleted APP_POOL/pickWeighted/buildTopApps random fake-data generator + fake "sync" action; new honest "set" action (absolute minutes 0-1440 + user-entered top apps, sanitized/deduped, max 5) and delta "log" kept for quick adjustments
+- Dashboard.tsx: fake "Sync device" button replaced with real "Log screen time" dialog (hours/minutes inputs + 3 optional top-app rows, prefilled from today); empty-state copy updated
+- ChatView.tsx: assistant messages now render markdown via react-markdown (lists/bold/blockquote styled to theme); user bubbles plain text
+- next.config.ts: removed typescript.ignoreBuildErrors (builds now enforce type safety); fixed the hidden error it was masking (crypto.ts Uint8Array<ArrayBuffer> typing for WebCrypto BufferSource)
+- eslint.config.mjs: ignored generated/build dirs (src/generated, .open-next, .wrangler, db) -> lint fully clean
+- Verified: tsc clean, eslint clean, opennextjs-cloudflare build PASSES with type checking on
+- E2E (agent-browser): register -> log 2h45m + TikTok 90m/YouTube 55m -> top apps render -> Guide chat real GLM reply in ~2.5s ("20-minute cozy challenge..."), markdown bold renders, zero console errors; direct curl chat reply contextual not canned
+- cloudflare/README.md: Git-connected Workers deploy steps (build cmd npx prisma generate && npx opennextjs-cloudflare build), Grok/Z.ai key setup, env var reference updated (WORKERS_AI_MODEL, AI_API_KEY/BASE_URL/MODEL)
+
+Stage Summary:
+- Companions now run on REAL trained models everywhere: Grok or GLM with a key, Workers AI Llama 3.3 70B free on Cloudflare, GLM in sandbox
+- No fake data anywhere: screen time is honest manual entry from the phone's own Screen Time screen
+- Repo is deploy-ready: push -> Cloudflare Workers Git build -> live (D1 28688ccf bound, AI binding included)

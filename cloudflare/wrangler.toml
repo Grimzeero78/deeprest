@@ -16,7 +16,7 @@ crons = ["0 23 * * *"]   # 23:00 UTC daily (adjust to your users' midnight)
 [[d1_databases]]
 binding = "DB"
 database_name = "deeprest-db"                            # ← change if you named yours differently
-database_id = "e4caa5a2-74a7-441d-b6f5-fb95e32ca24e"     # ← YOUR D1 database UUID
+database_id = "28688ccf-5cac-4037-a2b6-ec2e856ebf8a"     # ← YOUR D1 database UUID
 
 # ---------- KV namespaces (create first, then paste the ids) ----------
 # wrangler kv namespace create RATE_LIMIT

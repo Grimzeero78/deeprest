@@ -32,7 +32,7 @@ function toB64(bytes: Uint8Array): string {
   return btoa(bin);
 }
 
-function fromB64(b64: string): Uint8Array {
+function fromB64(b64: string): Uint8Array<ArrayBuffer> {
   const bin = atob(b64);
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
@@ -62,7 +62,7 @@ export async function decryptAtRest(payload: string): Promise<string | null> {
     const tag = fromB64(tagB64);
     const ct = fromB64(dataB64);
     // WebCrypto expects tag appended to ciphertext
-    const joined = new Uint8Array(ct.length + tag.length);
+    const joined = new Uint8Array(new ArrayBuffer(ct.length + tag.length));
     joined.set(ct);
     joined.set(tag, ct.length);
     const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, joined);

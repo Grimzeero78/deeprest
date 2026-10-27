@@ -21,7 +21,7 @@
     {
       "binding": "DB",
       "database_name": "deeprest-db",
-      "database_id": "e4caa5a2-74a7-441d-b6f5-fb95e32ca24e"
+      "database_id": "28688ccf-5cac-4037-a2b6-ec2e856ebf8a"
     }
   ],
   // ---------- Workers AI for the 3 companions (bound as env.AI) ----------
@@ -29,7 +29,7 @@
     "binding": "AI"
   },
   "vars": {
-    "AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+    "WORKERS_AI_MODEL": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
   }
   // ---------- Optional: KV for shared rate-limit counters ----------
   // Create first:  bunx wrangler kv namespace create RATE_LIMIT

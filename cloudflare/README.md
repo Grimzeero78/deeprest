@@ -19,7 +19,14 @@ for Next.js on Workers.
 
 - **Auth**: PBKDF2-SHA256 via WebCrypto (no node:crypto — Workers-safe)
 - **Chat encryption**: AES-256-GCM via WebCrypto, `iv:tag:ciphertext` at rest
-- **AI companions**: Workers AI binding (`env.AI`) → OpenAI-compatible fallback → graceful offline replies
+- **AI companions — real trained models, no canned scripts**:
+  1. Your own key (Grok / Z.ai GLM / OpenAI — OpenAI-compatible) if `AI_API_KEY` is set
+  2. **Workers AI** binding (`env.AI`) — real Llama 3.3 70B, zero config on Cloudflare
+  3. GLM via z-ai-sdk (local sandbox dev only)
+  4. Compassionate offline reply (last resort only)
+- **Screen time**: honest manual logging — the user enters the total from their phone's
+  Digital Wellbeing / Screen Time screen (a web app cannot read device usage silently;
+  no fake random data is ever generated)
 - **Schema**: `prisma/schema.prisma` is mapped 1:1 onto `cloudflare/schema.sql`
   (snake_case tables) — the same client runs against both databases
 
@@ -29,12 +36,12 @@ for Next.js on Workers.
 
 1. Cloudflare dashboard → **Workers & Pages → Create → Workers → Import a repository**
 2. Select `Grimzeero78/deeprest`, then set:
-   - **Framework preset**: `Next.js` (uses OpenNext)
-   - **Build command**: `npx opennextjs-cloudflare build`
+   - **Build command**: `npx prisma generate && npx opennextjs-cloudflare build`
    - **Deploy command**: `npx wrangler deploy`
 3. Bindings come from the committed `wrangler.jsonc` automatically:
-   - D1 `DB` → database `e4caa5a2-74a7-441d-b6f5-fb95e32ca24e`
-   - Workers AI `AI`
+   - D1 `DB` → database `28688ccf-5cac-4037-a2b6-ec2e856ebf8a`
+     (if you recreated the database, paste YOUR id in `wrangler.jsonc`)
+   - Workers AI `AI` (real Llama 3.3 70B — the companions work with no extra keys)
 4. Add secrets (dashboard → your Worker → Settings → Variables and Secrets, or CLI):
    ```bash
    bunx wrangler secret put JWT_SECRET       # 32+ random chars
@@ -44,6 +51,15 @@ for Next.js on Workers.
    ```bash
    bunx wrangler d1 execute deeprest-db --remote --file=./cloudflare/schema.sql
    ```
+6. *(Optional)* Premium AI — put a **Grok** key on the Worker (works from the free tier,
+   see console.x.ai; 100% OpenAI-compatible):
+   ```bash
+   bunx wrangler secret put AI_API_KEY          # your xAI key  (sk-...)
+   bunx wrangler secret put AI_BASE_URL         # https://api.x.ai/v1
+   bunx wrangler secret put AI_API_MODEL        # grok-4-1-fast  (or grok-4, glm-4.6, …)
+   ```
+   For **Z.ai GLM** instead: `AI_BASE_URL=https://api.z.ai/api/paas/v4`, `AI_API_MODEL=glm-4.6`.
+   Without a key the companions run on Workers AI — still real trained models.
 
 ### Option B — CLI
 
@@ -84,8 +100,10 @@ bunx wrangler dev -c wrangler.local.jsonc --port 8787   # local config omits the
 |---|---|---|
 | `JWT_SECRET` | Worker secret | Signs session JWTs |
 | `ENCRYPTION_KEY` | Worker secret | Derives AES-256-GCM key (chat at rest) |
-| `AI_MODEL` | `wrangler.jsonc` vars | Workers AI model id |
-| `OPENAI_API_KEY` | Worker secret (optional) | OpenAI-compatible provider instead of Workers AI |
+| `WORKERS_AI_MODEL` | `wrangler.jsonc` vars | Workers AI model id (default Llama 3.3 70B) |
+| `AI_API_KEY` | Worker secret (optional) | Grok / Z.ai / OpenAI key — takes priority over Workers AI |
+| `AI_BASE_URL` | Worker secret/var (optional) | Default `https://api.x.ai/v1` (Grok) |
+| `AI_API_MODEL` | Worker secret/var (optional) | Default `grok-4-1-fast`; GLM = `glm-4.6` |
 | `CRON_SECRET` | cron worker var/secret | Protects the debug HTTP endpoint |
 
 ## Rank System (source of truth)

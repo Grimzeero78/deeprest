@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import ReactMarkdown from "react-markdown";
 import { Church, Compass, Brain, Send, Loader2, Info, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ChatMsg } from "./types";
@@ -219,7 +220,26 @@ export function ChatView() {
                     : "rounded-bl-md border border-white/10 bg-white/[0.05] text-slate-200"
                 )}
               >
-                {m.content}
+                {m.role === "user" ? (
+                  m.content
+                ) : (
+                  <ReactMarkdown
+                    components={{
+                      p: (props) => <p className="mb-2 last:mb-0" {...props} />,
+                      ul: (props) => <ul className="mb-2 list-disc space-y-1 pl-4 last:mb-0" {...props} />,
+                      ol: (props) => <ol className="mb-2 list-decimal space-y-1 pl-4 last:mb-0" {...props} />,
+                      strong: (props) => <strong className="font-semibold text-white" {...props} />,
+                      h1: (props) => <h1 className="mb-2 text-base font-semibold text-white" {...props} />,
+                      h2: (props) => <h2 className="mb-2 text-sm font-semibold text-white" {...props} />,
+                      blockquote: (props) => (
+                        <blockquote className="mb-2 border-l-2 border-violet-400/50 pl-3 italic text-slate-300" {...props} />
+                      ),
+                      a: (props) => <a className="text-cyan-300 underline" target="_blank" rel="noreferrer" {...props} />,
+                    }}
+                  >
+                    {m.content}
+                  </ReactMarkdown>
+                )}
               </div>
             </div>
           ))}
