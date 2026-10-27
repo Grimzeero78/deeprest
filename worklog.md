@@ -212,3 +212,21 @@ Stage Summary:
 - No new failure: fixed build 51127f27 just waiting in EAS free-tier queue; watcher cron 478181 now armed to announce it
 - App WhatsApp-chat verified working in production
 EAS build watcher: status=IN_QUEUE (check @ 2026-10-27T17:40Z)
+
+---
+Task ID: 12
+Agent: main (Z.ai)
+Task: EAS build 51127f27 ERRORED (cron watcher fired) - diagnose and resubmit
+
+Work Log:
+- Cron 478181 detected status flip IN_QUEUE -> ERRORED; fetched + brotli-decoded build log
+- REAL error: :deeprest-usage:compileReleaseKotlin — "Unresolved reference 'ModuleDefinition'" (lines 14, 27) + cascade errors (Name, Function as kotlin.Function has no constructors)
+- ROOT CAUSE: SDK 54 expo-modules-core 3.0.30 moved the DSL — ModuleDefinition is an inline EXTENSION FUNCTION on Module in package expo.modules.kotlin.modules (verified: node_modules/.../modules/Module.kt:61 + canonical CoreModule.kt imports expo.modules.kotlin.modules.ModuleDefinition). Our import said expo.modules.kotlin.ModuleDefinition (missing .modules). Previous session's "fix" only changed the error string, not the package
+- ONE-LINE FIX applied to DeeprestUsageModule.kt:14; verified no other bad imports in repo
+- Committed fa7e47f, pushed to GitHub main
+- Resubmitted build c4057780-22b1-4351-86da-7c0c6bee404d (preview APK, keystore Build Credentials 0xFmF7wgS7 reused)
+- Deleted cron 478181, created cron 478221 watching c4057780 (20-min checks, silent unless state change)
+- USER IMPACT: local-build ZIP downloaded before fa7e47f has the broken import -> user must re-download ZIP or run git pull before local build
+
+Stage Summary:
+- Fix is a verified single-line import correction matching SDK 54 canonical usage; new build c4057780 queued with watcher armed
